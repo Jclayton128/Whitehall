@@ -24,6 +24,8 @@ public class TileHandler : MonoBehaviour
     Tween _slideTween;
     Tween _colorTween;
     Collider2D _coll;
+    public Vector2Int IndexPos;
+    public List<TileHandler> LinkedTiles = new List<TileHandler> ();
     
 
     private void Awake()
@@ -31,6 +33,23 @@ public class TileHandler : MonoBehaviour
         _coll = GetComponent<Collider2D>();
     }
 
+    #region Tile Setup
+
+    public void AssignIndexPos(Vector2Int index)
+    {
+        IndexPos = index;
+    }
+
+    public void AddLinkedTile(TileHandler tileToLink)
+    {
+        if (!LinkedTiles.Contains(tileToLink) && tileToLink != this)
+        {
+            LinkedTiles.Add(tileToLink);
+        }
+
+    }
+
+    #endregion
 
     #region Mouse Handlers
 

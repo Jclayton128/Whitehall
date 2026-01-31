@@ -6,7 +6,6 @@ using UnityEngine;
 public class TileController : MonoBehaviour
 {
     public static TileController Instance { get; private set; }
-    public Action TileRemappingComplete;
 
 
     //ref
@@ -38,9 +37,11 @@ public class TileController : MonoBehaviour
     public void BuildNewArena()
     {
         ConstructArena();
-        RemapTileLocations();
+        LinkTiles();
+        RecenterTiles();
     }
 
+ 
 
     private void ConstructArena()
     {
@@ -54,21 +55,67 @@ public class TileController : MonoBehaviour
             {
                 walker.x = ix + (_tileGap_x * ix);
                 walker.y = (iy * _yFactor) + (_tileGap_y * iy);
-                CreateNewTile(walker);
+                CreateNewTile(walker, new Vector2Int(ix, iy));
             }
         }
 
         
     }
 
-    private void CreateNewTile(Vector2 location)
+    private void CreateNewTile(Vector2 location, Vector2Int indexPos)
     {
         TileHandler newTile = Instantiate(_tilePrefab, _tileHolder);
         newTile.transform.position = location;
+        newTile.AssignIndexPos(indexPos);
 
         _tilesRaw.Add(newTile);
+        _tilesLocation.Add(indexPos, newTile);
     }
 
+    private void LinkTiles()
+    {
+        foreach (var tileIndex in _tilesLocation.Keys)
+        {
+            var neighbors = GetNeighboringTiles(tileIndex);
+
+            foreach (var neighbor in neighbors)
+            {
+                _tilesLocation[tileIndex].AddLinkedTile(neighbor);
+            }
+        }
+    }
+
+    private List<TileHandler> GetNeighboringTiles(Vector2Int originTile)
+    {
+        List<TileHandler> neighboringTiles = new List<TileHandler>();
+
+        Vector2Int walker = Vector2Int.zero;
+
+        for (int ix = -1; ix <= 1; ix++)
+        {
+            for (int iy = -1; iy <= 1; iy++)
+            {
+                walker.x = originTile.x + ix;
+                walker.y = originTile.y + iy;
+
+                if (_tilesLocation.ContainsKey(walker))
+                {
+                    neighboringTiles.Add(_tilesLocation[walker]);
+                }
+
+            }
+        }
+
+        return neighboringTiles;
+    }
+
+    private void RecenterTiles()
+    {
+        Vector2 newPos = Vector2.zero;
+        newPos.x = -((_arenaSize / 2) + (2 * _tileGap_x));
+        newPos.y = -((_arenaSize / 2) + (2 * _tileGap_y));
+        _tileHolder.transform.position = newPos;
+    }
 
     private void RemoveAllTiles()
     {
@@ -83,16 +130,6 @@ public class TileController : MonoBehaviour
 
     }
 
-    private void RemapTileLocations()
-    {
-        _tilesLocation.Clear();
-        foreach (var tile in _tilesRaw)
-        {
-            _tilesLocation.Add(GetVec2Int(tile), tile);
-        }
-        TileRemappingComplete?.Invoke();
-
-    }
 
 
 
@@ -102,8 +139,8 @@ public class TileController : MonoBehaviour
     public Vector2Int GetVec2Int(TileHandler tile)
     {
         Vector2Int origin = Vector2Int.zero;
-        origin.x = Mathf.RoundToInt(tile.transform.position.x);
-        origin.y = Mathf.RoundToInt(tile.transform.position.y / _yFactor);
+        origin.x = Mathf.RoundToInt(tile.transform.localPosition.x);
+        origin.y = Mathf.RoundToInt(tile.transform.localPosition.y / _yFactor);
         return origin;
 
     }
