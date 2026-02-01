@@ -53,6 +53,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: 08513617cee844f4b88d86c52b48135f, type: 3}
     - target: {fileID: 3292707244480955132, guid: 5b47c928c9d858a4587e1c58488c55a4, type: 3}
+      propertyPath: _isAgent
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3292707244480955132, guid: 5b47c928c9d858a4587e1c58488c55a4, type: 3}
       propertyPath: _isPlayer
       value: 1
       objectReference: {fileID: 0}

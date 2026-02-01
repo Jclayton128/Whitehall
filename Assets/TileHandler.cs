@@ -7,13 +7,15 @@ using System;
 
 public class TileHandler : MonoBehaviour
 {
+    public enum ClueTypes { None, Origin, Passage }
 
     //refs
-    [SerializeField] List<SpriteRenderer> _srs = new List<SpriteRenderer>();
     [SerializeField] SpriteRenderer _tileSR = null;
+    [SerializeField] SpriteRenderer _borderSR = null;
+    [SerializeField] SpriteRenderer _clueSR = null;
     [SerializeField] Transform _visualsTransform = null;
     public Transform VisualsTransform => _visualsTransform;
-    [SerializeField] SpriteRenderer _borderSR = null;
+
     Collider2D _coll;
 
     //settings
@@ -27,10 +29,14 @@ public class TileHandler : MonoBehaviour
     public Vector2Int IndexPos;
     public List<TileHandler> LinkedTiles = new List<TileHandler> ();
     public ActorHandler Occupant => GetComponentInChildren<ActorHandler> ();
+    [SerializeField] ClueTypes _clueType = ClueTypes.None;
+    [SerializeField] bool _isClueRevealed = false;
+
 
     private void Awake()
     {
         _coll = GetComponent<Collider2D>();
+        SetClue(ClueTypes.None);
     }
 
     #region Tile Setup
@@ -57,6 +63,7 @@ public class TileHandler : MonoBehaviour
     {
         if (ActorController.Instance.PriorityActor.LegalMoves.Contains(this))
         {
+            TileController.Instance.SetTileUnderCursor(this);
             FullraiseTile();
         }
     }
@@ -71,27 +78,81 @@ public class TileHandler : MonoBehaviour
         {
             UnraiseTile();
         }
+        TileController.Instance.SetTileUnderCursor(null);
     }
 
-    private void OnMouseUpAsButton()
-    {
-        if (ActorController.Instance.PriorityActor.LegalMoves.Contains(this))
-        {
-            HandleClick();
-        }
-    }
 
-    private void HandleClick()
-    {
-        //
-        TileController.Instance.HandleTileClick(this);
-    }
 
     #endregion
 
     #region Tile Mechanics
-   
 
+    public void SetClue(ClueTypes clueType)
+    {
+        if (clueType == ClueTypes.None)
+        {
+            _clueType = clueType;
+            if (_isClueRevealed)
+            {
+                _clueSR.enabled = true;
+            }
+            else
+            {
+                _clueSR.enabled = false;
+            }
+        }
+        else
+        {
+            if (clueType == ClueTypes.Origin)
+            {
+                _clueType = ClueTypes.Origin;
+                _clueSR.sprite = TileController.Instance.OriginClue;
+                _clueSR.enabled = true;
+            }
+            else if (clueType == ClueTypes.Passage)
+            {                
+                if (_clueType == ClueTypes.Origin)
+                {
+                    // do nothing; origin clues should outlast passage clues.
+                }
+                else
+                {
+                    _clueType = ClueTypes.Passage;
+                    _clueSR.sprite = TileController.Instance.PassageClue;
+                    if (_isClueRevealed)
+                    {
+                        _clueSR.enabled = true;
+                    }
+                    else
+                    {
+                        _clueSR.enabled = false;
+                    }
+                }
+                    
+            }
+        }
+    }
+
+    public bool CheckRevealClue()
+    {
+        _isClueRevealed = true;
+        if (_clueType == ClueTypes.None)
+        {
+            
+            return false;
+        }
+        else if (_clueType == ClueTypes.Origin)
+        {
+            return false;
+        }
+        else if (_clueType == ClueTypes.Passage)
+        {
+            _clueSR.enabled = true;
+            return true;
+        }
+
+        return false;
+    }
 
     public void DimTile()
     {

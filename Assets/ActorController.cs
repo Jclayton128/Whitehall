@@ -55,8 +55,9 @@ public class ActorController : MonoBehaviour
         _priorityIndex = 0;
         _turnorderIcons[_priorityIndex].GetComponent<RectTransform>().DOScale(Vector2.one, _turnOrderTweenTime);
         PriorityActor.BeginTurn();
+
         _turns = 1;
-        _turnCountTMP.text = "1";
+        _turnCountTMP.text = _turns.ToString();
     }
 
     private void SpawnAgent(int index)
@@ -69,8 +70,9 @@ public class ActorController : MonoBehaviour
 
     private void SpawnEnemy()
     {
-        var actor = Instantiate(_enemyPrefab,
-            TileController.Instance.GetTileAtVec2Int(_enemyStartingSpot).VisualsTransform);
+        var startTile = TileController.Instance.GetTileAtVec2Int(_enemyStartingSpot);
+        var actor = Instantiate(_enemyPrefab, startTile.VisualsTransform);
+        startTile.SetClue(TileHandler.ClueTypes.Origin);
 
         AddActorToStartOfTurnOrder(actor);
     }

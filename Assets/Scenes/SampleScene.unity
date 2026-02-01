@@ -810,6 +810,8 @@ MonoBehaviour:
   _yFactor: 1
   _tileGap_x: 0.25
   _tileGap_y: 0.25
+  OriginClue: {fileID: 21300000, guid: 7450cd284991ec948b569381b50155a4, type: 3}
+  PassageClue: {fileID: 21300000, guid: 85ecdc9ad995a024bbc3348434f0c34b, type: 3}
   Color_noMove: {r: 1, g: 1, b: 1, a: 1}
   Color_knownOccupant: {r: 0, g: 0, b: 1, a: 1}
   Color_legalMove: {r: 0, g: 1, b: 0, a: 1}
@@ -866,6 +868,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a2e669ccf351f0b4fbace5c3ab353da0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _turnCountTMP: {fileID: 1292075162}
   _turnorderIcons:
   - {fileID: 387575584}
   - {fileID: 119812494}
@@ -887,6 +890,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 1965676833326614908, guid: 07aee31357ecc534c8f2674150c2a1c0, type: 3}
   m_PrefabInstance: {fileID: 2126757119}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1292075162 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1371911720516966212, guid: 07aee31357ecc534c8f2674150c2a1c0, type: 3}
+  m_PrefabInstance: {fileID: 2126757119}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1850531675
 GameObject:
   m_ObjectHideFlags: 0

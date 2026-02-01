@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class TileController : MonoBehaviour
@@ -21,6 +22,9 @@ public class TileController : MonoBehaviour
     [SerializeField] float _tileGap_x = 0.5f;
     [SerializeField] float _tileGap_y = 0.5f;
 
+    public Sprite OriginClue = null;
+    public Sprite PassageClue = null;
+
     public Color Color_noMove = Color.black;
     public Color Color_knownOccupant = Color.blue;
     public Color Color_legalMove = Color.green;
@@ -30,6 +34,7 @@ public class TileController : MonoBehaviour
     bool _isProcessingClick = false;
     [SerializeField] List<TileHandler> _tilesRaw = new List<TileHandler>();
     Dictionary<Vector2Int, TileHandler> _tilesLocation = new Dictionary<Vector2Int, TileHandler>();
+    TileHandler _tileUnderCursor;
 
     #region Arena Setup
 
@@ -219,26 +224,39 @@ public class TileController : MonoBehaviour
 
     #region Gameplay
 
-
-    public void HandleTileClick(TileHandler clickedTile)
+    public void SetTileUnderCursor(TileHandler tileUnderCursor)
     {
-        UnraiseAllTiles();
-        ActorController.Instance.PriorityActor.SlideToNewTile(clickedTile);
+        _tileUnderCursor = tileUnderCursor;
     }
 
-    
-
-    public void DeregisterTile(TileHandler tile)
+    public void HandleTileClick_LMB()
     {
-        _tilesRaw.Remove(tile);
+        if (_tileUnderCursor == null) return;
+
+        if (ActorController.Instance.PriorityActor.LegalMoves.Contains(_tileUnderCursor))
+        {
+            UnraiseAllTiles();
+            ActorController.Instance.PriorityActor.SlideToNewTile(_tileUnderCursor);
+        }
     }
 
-   
-
-    private void HandleClickProcessingComplete()
+    public void HandleTileClick_RMB()
     {
-        _isProcessingClick = false;
+        if (_tileUnderCursor == null) return;
+
+        if (ActorController.Instance.PriorityActor.LegalMoves.Contains(_tileUnderCursor))
+        {
+            Debug.Log("checking for clues");
+            bool foundClue = _tileUnderCursor.CheckRevealClue();
+
+            if (foundClue)
+            {
+                ActorController.Instance.PriorityActor.CompleteTurn();
+            }
+        }
     }
+
+
 
     #endregion
 

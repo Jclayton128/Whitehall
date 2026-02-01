@@ -7,13 +7,13 @@ using System;
 public class ActorHandler : MonoBehaviour
 {
     //ref
-    [SerializeField] bool _isPlayer = false;
+    [SerializeField] bool _isAgent = false;
 
     [SerializeField] SpriteRenderer _visualSR = null;
 
     //state
     Tween _slideTween;
-    public bool IsPlayer => _isPlayer;
+    public bool IsAgent => _isAgent;
 
     public TileHandler CurrentTile => GetCurrentTile();
     public List<TileHandler> LegalMoves => GetLegalMoves();
@@ -45,7 +45,7 @@ public class ActorHandler : MonoBehaviour
     public void BeginTurn()
     {
         TileController.Instance.UnraiseAllTiles();
-        if (_isPlayer)
+        if (_isAgent)
         {
             //highlight possible options
             foreach (var tile in LegalMoves)
@@ -58,13 +58,14 @@ public class ActorHandler : MonoBehaviour
             Debug.Log("Monster does his movement...");
 
             int rand = UnityEngine.Random.Range(0, LegalMoves.Count);
-
-            SlideToNewTile(LegalMoves[rand]);
+            var newTile = LegalMoves[rand];
+            newTile.SetClue(TileHandler.ClueTypes.Passage);
+            SlideToNewTile(newTile);
         }
 
     }
 
-    private void CompleteTurn()
+    public void CompleteTurn()
     {
         ActorController.Instance.HandlePriorityActorTurnCompletion();
     }
