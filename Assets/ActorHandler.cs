@@ -9,16 +9,25 @@ public class ActorHandler : MonoBehaviour
     //ref
     [SerializeField] bool _isAgent = false;
 
+    [SerializeField] AgentData _agentData;
+    public AgentData AgentData => _agentData;
     [SerializeField] SpriteRenderer _visualSR = null;
 
     //state
     Tween _slideTween;
     public bool IsAgent => _isAgent;
 
+
     public TileHandler CurrentTile => GetCurrentTile();
     public List<TileHandler> LegalMoves => GetLegalMoves();
 
     public Sprite ActorSprite => _visualSR.sprite;
+
+    public void SetAgentData(AgentData data)
+    {
+        _agentData = data;
+        _visualSR.sprite = _agentData.AgentSprite;
+    }
 
     public void SlideToNewTile(TileHandler newTile)
     {

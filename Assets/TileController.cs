@@ -24,6 +24,7 @@ public class TileController : MonoBehaviour
 
     public Sprite OriginClue = null;
     public Sprite PassageClue = null;
+    public Sprite JustSearchedClue = null;
 
     public Color Color_noMove = Color.black;
     public Color Color_knownOccupant = Color.blue;

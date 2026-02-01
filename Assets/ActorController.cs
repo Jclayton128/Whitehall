@@ -5,26 +5,32 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using DG.Tweening;
+using System;
 
 public class ActorController : MonoBehaviour
 {
     public static ActorController Instance { get; private set; }
+    public Action PriorityActorTurnCompleting;
+
 
     //settings
 
     [SerializeField] TextMeshProUGUI _turnCountTMP = null;
 
-    [SerializeField] Image[] _turnorderIcons = null;
-    Vector2 _smallScale = Vector2.one * 0.5f;
+    [SerializeField] PortraitDriver[] _turnorderPortraits = null;
 
-    [SerializeField] ActorHandler[] _agentPrefab = null;
+
+    [SerializeField] ActorHandler _agentPrefab = null;
+    [SerializeField] AgentData[] _agentData = null;
     [SerializeField] ActorHandler _enemyPrefab = null;
 
+    public Sprite MoveAbilityIcon = null;
+    public Sprite SearchAbilityIcon = null;
 
     [SerializeField] Vector2Int[] _playerStartingSpot = null;
     Vector2Int _enemyStartingSpot = new Vector2Int(6, 6);
 
-    float _turnOrderTweenTime = 0.5f;
+
     public float MoveTweenTime = 0.75f;
 
     //state
@@ -48,12 +54,11 @@ public class ActorController : MonoBehaviour
 
         for (int i = 0; i  < _actorTurnOrder.Count; i++)
         {
-            _turnorderIcons[i].sprite = _actorTurnOrder[i].ActorSprite;
-            _turnorderIcons[i].GetComponent<RectTransform>().localScale = _smallScale;
+            _turnorderPortraits[i].SetPortrait(_actorTurnOrder[i].AgentData);
         }
 
         _priorityIndex = 0;
-        _turnorderIcons[_priorityIndex].GetComponent<RectTransform>().DOScale(Vector2.one, _turnOrderTweenTime);
+        _turnorderPortraits[_priorityIndex].EnlargePortrait();
         PriorityActor.BeginTurn();
 
         _turns = 1;
@@ -62,8 +67,9 @@ public class ActorController : MonoBehaviour
 
     private void SpawnAgent(int index)
     {
-        var actor = Instantiate(_agentPrefab[index],
+        var actor = Instantiate(_agentPrefab,
             TileController.Instance.GetTileAtVec2Int(_playerStartingSpot[index]).VisualsTransform);
+        actor.SetAgentData(_agentData[index]);
 
         AddActorToEndOfTurnOrder(actor);
     }
@@ -97,7 +103,9 @@ public class ActorController : MonoBehaviour
 
     public void HandlePriorityActorTurnCompletion()
     {
-        _turnorderIcons[_priorityIndex].GetComponent<RectTransform>().DOScale(_smallScale, _turnOrderTweenTime);
+        PriorityActorTurnCompleting?.Invoke();
+
+        _turnorderPortraits[_priorityIndex].ShrinkPortrait();
         
         _priorityIndex++;
         if (_priorityIndex >= _actorTurnOrder.Count)
@@ -107,7 +115,7 @@ public class ActorController : MonoBehaviour
             _turnCountTMP.text = _turns.ToString();
         }
 
-        _turnorderIcons[_priorityIndex].GetComponent<RectTransform>().DOScale(Vector2.one, _turnOrderTweenTime);
+        _turnorderPortraits[_priorityIndex].EnlargePortrait();
         PriorityActor.BeginTurn();
     }
 

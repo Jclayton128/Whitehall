@@ -88,6 +88,8 @@ MonoBehaviour:
   _hoverYIncrease: 0.1
   IndexPos: {x: 0, y: 0}
   LinkedTiles: []
+  _clueType: 0
+  _isClueRevealed: 0
 --- !u!61 &2749805797761397813
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -206,7 +208,7 @@ SpriteRenderer:
   m_SortingLayerID: 704559169
   m_SortingLayer: 1
   m_SortingOrder: 1
-  m_Sprite: {fileID: 21300000, guid: 85ecdc9ad995a024bbc3348434f0c34b, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 92365f7f209153f4898e788df4b7ebda, type: 3}
   m_Color: {r: 1, g: 0, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0

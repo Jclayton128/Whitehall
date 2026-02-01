@@ -7,7 +7,7 @@ using System;
 
 public class TileHandler : MonoBehaviour
 {
-    public enum ClueTypes { None, Origin, Passage }
+    public enum ClueTypes { None, Origin, Passage, JustSearched }
 
     //refs
     [SerializeField] SpriteRenderer _tileSR = null;
@@ -30,7 +30,7 @@ public class TileHandler : MonoBehaviour
     public List<TileHandler> LinkedTiles = new List<TileHandler> ();
     public ActorHandler Occupant => GetComponentInChildren<ActorHandler> ();
     [SerializeField] ClueTypes _clueType = ClueTypes.None;
-    [SerializeField] bool _isClueRevealed = false;
+    //[SerializeField] bool _isClueRevealed = false;
 
 
     private void Awake()
@@ -38,6 +38,13 @@ public class TileHandler : MonoBehaviour
         _coll = GetComponent<Collider2D>();
         SetClue(ClueTypes.None);
     }
+
+    private void Start()
+    {
+        ActorController.Instance.PriorityActorTurnCompleting += HandlePriorityActorTurnCompleting;
+    }
+
+
 
     #region Tile Setup
 
@@ -92,53 +99,42 @@ public class TileHandler : MonoBehaviour
         if (clueType == ClueTypes.None)
         {
             _clueType = clueType;
-            if (_isClueRevealed)
+            _clueSR.sprite = null;
+        }
+
+        else if (clueType == ClueTypes.Origin)
+        {
+            _clueType = ClueTypes.Origin;
+            _clueSR.sprite = TileController.Instance.OriginClue;
+            _clueSR.enabled = true;
+        }
+        else if (clueType == ClueTypes.Passage)
+        {                
+            if (_clueType == ClueTypes.Origin)
             {
-                _clueSR.enabled = true;
+                // do nothing; origin clues should outlast passage clues.
             }
             else
             {
-                _clueSR.enabled = false;
+                _clueType = ClueTypes.Passage;
+                _clueSR.sprite = null; //remain null until player check-reveals this tile
             }
-        }
-        else
-        {
-            if (clueType == ClueTypes.Origin)
-            {
-                _clueType = ClueTypes.Origin;
-                _clueSR.sprite = TileController.Instance.OriginClue;
-                _clueSR.enabled = true;
-            }
-            else if (clueType == ClueTypes.Passage)
-            {                
-                if (_clueType == ClueTypes.Origin)
-                {
-                    // do nothing; origin clues should outlast passage clues.
-                }
-                else
-                {
-                    _clueType = ClueTypes.Passage;
-                    _clueSR.sprite = TileController.Instance.PassageClue;
-                    if (_isClueRevealed)
-                    {
-                        _clueSR.enabled = true;
-                    }
-                    else
-                    {
-                        _clueSR.enabled = false;
-                    }
-                }
                     
-            }
         }
+        
     }
 
     public bool CheckRevealClue()
     {
-        _isClueRevealed = true;
+        //returning true implies that new information was given to the player.
+
+        //_isClueRevealed = true;
+
         if (_clueType == ClueTypes.None)
         {
-            
+            _clueType = ClueTypes.JustSearched;
+            _clueSR.enabled = true;
+            _clueSR.sprite = TileController.Instance.JustSearchedClue;
             return false;
         }
         else if (_clueType == ClueTypes.Origin)
@@ -148,6 +144,7 @@ public class TileHandler : MonoBehaviour
         else if (_clueType == ClueTypes.Passage)
         {
             _clueSR.enabled = true;
+            _clueSR.sprite = TileController.Instance.PassageClue;
             return true;
         }
 
@@ -193,6 +190,15 @@ public class TileHandler : MonoBehaviour
 
         _tileSR.color = TileController.Instance.Color_noMove;
         //_hoverTween = _visualsTransform.DOLocalMoveY(0, hoverTweenTime).SetEase(Ease.OutBack);
+    }
+
+    private void HandlePriorityActorTurnCompleting()
+    {
+        if (_clueType == ClueTypes.JustSearched)
+        {
+            _clueType = ClueTypes.None;
+            _clueSR.enabled = false;
+        }
     }
 
     #endregion
