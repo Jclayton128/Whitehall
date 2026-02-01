@@ -5,7 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Agent Data")]
 public class AgentData : ScriptableObject
 {
-    public enum AgentAbility { Move, Search, Arrest}
+    public enum AgentAbility { None, Move, Search, Arrest, Pass}
 
     [SerializeField] string _agentName = "Default Agent";
 

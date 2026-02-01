@@ -27,7 +27,7 @@ public class TileController : MonoBehaviour
     public Sprite JustSearchedClue = null;
 
     public Color Color_noMove = Color.black;
-    public Color Color_knownOccupant = Color.blue;
+    public Color Color_pass = Color.blue;
     public Color Color_legalMove = Color.green;
     public Color Color_highlight = Color.yellow;
 
@@ -267,39 +267,14 @@ public class TileController : MonoBehaviour
 
     #region All Tile Effects
 
-    public void DimAllTiles()
+    public void DeHighlightAllTiles()
     {
         foreach (var tile in _tilesRaw)
         {
-            tile.DimTile();
+            tile.DeHighlightTile();
         }
     }
 
-    public void HalfdimOrthogonalTiles(TileHandler hoveredTile)
-    {
-        List<TileHandler> orthoTiles = GetOrthogonalTiles(hoveredTile);
-        foreach (var tile in orthoTiles)
-        {
-            tile.HalfdimTile();
-        }
-    }
-
-    public void UnraiseAllTiles()
-    {
-        foreach (var tile in _tilesRaw)
-        {
-            tile.UnraiseTile();
-        }
-    }
-
-    public void HalfraiseAllOrthogonalTiles(TileHandler originTile)
-    {
-        List<TileHandler> orthoTiles = GetOrthogonalTiles(originTile);
-        foreach (var tile in orthoTiles)
-        {
-            tile.HalfraiseTile();
-        }
-    }
 
     #endregion
 }

@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _agentName: Badger
   _agentSprite: {fileID: 21300000, guid: 2468237659ec62949a6fd7fab19b8f3f, type: 3}
-  _agentAbilities: 0000000001000000
+  _agentAbilities: 0100000002000000

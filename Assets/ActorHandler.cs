@@ -42,6 +42,7 @@ public class ActorHandler : MonoBehaviour
 
         if (_abilityQueue[0] == AgentData.AgentAbility.Move)
         {
+            TileController.Instance.DeHighlightAllTiles();
             SlideToNewTile(clickedTile);
             return;
         }
@@ -71,7 +72,7 @@ public class ActorHandler : MonoBehaviour
             }
             else
             {
-                TileController.Instance.UnraiseAllTiles();
+                TileController.Instance.DeHighlightAllTiles();
                 if (_isAgent)
                 {
 
@@ -113,15 +114,15 @@ public class ActorHandler : MonoBehaviour
         //highlight possible options
         foreach (var tile in LegalMoves)
         {
-            tile.HalfraiseTile();
+            tile.SemiHighlightTile(_abilityQueue[0]);
         }
-        CurrentTile.HalfraiseTile();
+        CurrentTile.SemiHighlightTile(AgentData.AgentAbility.Pass);
     }
 
     public void BeginTurn()
     {
         _abilityQueue = new List<AgentData.AgentAbility>(_agentData.AgentAbilities);
-        TileController.Instance.UnraiseAllTiles();
+        TileController.Instance.DeHighlightAllTiles();
         if (_isAgent)
         {
             HighlightPossibleOptions();
