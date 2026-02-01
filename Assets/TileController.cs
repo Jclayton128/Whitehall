@@ -20,6 +20,11 @@ public class TileController : MonoBehaviour
     [SerializeField] float _tileGap_x = 0.5f;
     [SerializeField] float _tileGap_y = 0.5f;
 
+    public Color Color_noMove = Color.black;
+    public Color Color_knownOccupant = Color.blue;
+    public Color Color_legalMove = Color.green;
+    public Color Color_highlight = Color.yellow;
+
     //state
     bool _isProcessingClick = false;
     [SerializeField] List<TileHandler> _tilesRaw = new List<TileHandler>();
@@ -30,7 +35,7 @@ public class TileController : MonoBehaviour
     private void Awake()
     {
         Instance = this;
-        BuildNewArena();
+
 
     }
 
@@ -212,13 +217,12 @@ public class TileController : MonoBehaviour
     #endregion
 
     #region Gameplay
-    TileHandler _clickedTile;
-    List<TileHandler> _orthoTiles = new List<TileHandler>();
-    List<TileHandler> _consumableOrthoTiles = new List<TileHandler>();
+
 
     public void HandleTileClick(TileHandler clickedTile)
     {
-        
+        UnraiseAllTiles();
+        ActorController.Instance.PriorityActor.SlideToNewTile(clickedTile);
     }
 
     

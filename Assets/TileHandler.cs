@@ -14,19 +14,19 @@ public class TileHandler : MonoBehaviour
     [SerializeField] Transform _visualsTransform = null;
     public Transform VisualsTransform => _visualsTransform;
     [SerializeField] SpriteRenderer _borderSR = null;
+    Collider2D _coll;
 
     //settings
     [SerializeField] float hoverTweenTime = 0.125f;
     [SerializeField] float _hoverYIncrease = 0.1f;
 
+
     //state
     Tween _hoverTween;
-    Tween _slideTween;
     Tween _colorTween;
-    Collider2D _coll;
     public Vector2Int IndexPos;
     public List<TileHandler> LinkedTiles = new List<TileHandler> ();
-    
+    public ActorHandler Occupant => GetComponentInChildren<ActorHandler> ();
 
     private void Awake()
     {
@@ -55,32 +55,30 @@ public class TileHandler : MonoBehaviour
 
     private void OnMouseEnter()
     {
-        //_sizeTween.Kill();
-        //_sizeTween = transform.DOScale(Vector2.one * _scaleIncrease, hoverTweenTime).SetEase(Ease.OutBack);
-
-        if (_slideTween.IsActive()) return;
-
-        TileController.Instance.UnraiseAllTiles();
-        //TileController.Instance.HalfraiseAllOrthogonalTiles(this);
-        FullraiseTile();
+        if (ActorController.Instance.PriorityActor.LegalMoves.Contains(this))
+        {
+            FullraiseTile();
+        }
     }
 
     private void OnMouseExit()
     {
-        //_sizeTween.Kill();
-        //_sizeTween = transform.DOScale(Vector2.one, hoverTweenTime).SetEase(Ease.OutBack);
-
-        //if (_slideTween.IsActive()) return;
-
-        UnraiseTile();
-
-        //DimTile();
-
+        if (ActorController.Instance.PriorityActor.LegalMoves.Contains(this))
+        {
+            HalfraiseTile();
+        }
+        else
+        {
+            UnraiseTile();
+        }
     }
 
     private void OnMouseUpAsButton()
     {
-        HandleClick();
+        if (ActorController.Instance.PriorityActor.LegalMoves.Contains(this))
+        {
+            HandleClick();
+        }
     }
 
     private void HandleClick()
@@ -116,18 +114,23 @@ public class TileHandler : MonoBehaviour
     public void FullraiseTile()
     {
         _hoverTween.Kill();
+        _tileSR.color = TileController.Instance.Color_highlight;
         _hoverTween = _visualsTransform.transform.DOLocalMoveY(_hoverYIncrease, hoverTweenTime).SetEase(Ease.OutBack);
     }
 
     public void HalfraiseTile()
     {
         _hoverTween.Kill();
+        _tileSR.color = TileController.Instance.Color_legalMove;
         _hoverTween = _visualsTransform.transform.DOLocalMoveY(_hoverYIncrease / 2f, hoverTweenTime).SetEase(Ease.OutBack);
+        
     }
 
     public void UnraiseTile()
     {
         _hoverTween.Kill();
+
+        _tileSR.color = TileController.Instance.Color_noMove;
         _hoverTween = _visualsTransform.DOLocalMoveY(0, hoverTweenTime).SetEase(Ease.OutBack);
     }
 

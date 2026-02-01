@@ -80,12 +80,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _srs: []
-  _tileSR: {fileID: 0}
+  _tileSR: {fileID: 8953950855608452018}
   _visualsTransform: {fileID: 3576551128768540262}
-  _borderSR: {fileID: 0}
-  _herdTMP: {fileID: 0}
+  _borderSR: {fileID: 5662768432053882390}
   hoverTweenTime: 0.125
   _hoverYIncrease: 0.1
+  IndexPos: {x: 0, y: 0}
+  LinkedTiles: []
 --- !u!61 &2749805797761397813
 BoxCollider2D:
   m_ObjectHideFlags: 0

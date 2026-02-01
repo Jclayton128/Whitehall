@@ -339,6 +339,9 @@ GameObject:
   m_Component:
   - component: {fileID: 945837922}
   - component: {fileID: 945837921}
+  - component: {fileID: 945837925}
+  - component: {fileID: 945837924}
+  - component: {fileID: 945837923}
   m_Layer: 0
   m_Name: Controllers
   m_TagString: Untagged
@@ -381,6 +384,46 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &945837923
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 945837920}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c21140bf734361f4683947b68161270c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &945837924
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 945837920}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dde532eb7a7018e40906ddac5b7d9b1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &945837925
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 945837920}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2e669ccf351f0b4fbace5c3ab353da0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _agentPrefab: {fileID: 866066725129152097, guid: e2ce1d95151b368439fe2f9514697256, type: 3}
+  _enemytPrefab: {fileID: 1229234484920448796, guid: d26e8375f6644b748bd8d05865ac8654, type: 3}
+  MoveTweenTime: 0.75
+  _actorTurnOrder: []
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
