@@ -18,6 +18,8 @@ public class ActorHandler : MonoBehaviour
     public TileHandler CurrentTile => GetCurrentTile();
     public List<TileHandler> LegalMoves => GetLegalMoves();
 
+    public Sprite ActorSprite => _visualSR.sprite;
+
     public void SlideToNewTile(TileHandler newTile)
     {
         _slideTween.Kill();

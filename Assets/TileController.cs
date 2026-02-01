@@ -13,7 +13,8 @@ public class TileController : MonoBehaviour
     [SerializeField] TileHandler _tilePrefab = null;
 
     //settings
-    [SerializeField] int _arenaSize = 7;
+    [SerializeField] int _arenaSize_X = 11;
+    [SerializeField] int _arenaSize_Y = 9;
     public float ClickTweenTime = 0.75f;
     [SerializeField] float _yFactor = 1.0f;
 
@@ -54,9 +55,9 @@ public class TileController : MonoBehaviour
 
         Vector2 walker = Vector2.zero;
 
-        for (int ix = 0; ix < _arenaSize; ix++)
+        for (int ix = 0; ix < _arenaSize_X; ix++)
         {
-            for (int iy = 0; iy < _arenaSize; iy++)
+            for (int iy = 0; iy < _arenaSize_Y; iy++)
             {
                 walker.x = ix + (_tileGap_x * ix);
                 walker.y = (iy * _yFactor) + (_tileGap_y * iy);
@@ -117,8 +118,8 @@ public class TileController : MonoBehaviour
     private void RecenterTiles()
     {
         Vector2 newPos = Vector2.zero;
-        newPos.x = -((_arenaSize / 2) + (2 * _tileGap_x));
-        newPos.y = -((_arenaSize / 2) + (2 * _tileGap_y));
+        newPos.x = -(((float)_arenaSize_X / 2f) + (3f * _tileGap_x));
+        newPos.y = -((((float)_arenaSize_Y + 1f) / 2f) + (3f * _tileGap_y));
         _tileHolder.transform.position = newPos;
     }
 

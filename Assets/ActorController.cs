@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using TMPro;
+using UnityEngine.UI;
+using DG.Tweening;
 
 public class ActorController : MonoBehaviour
 {
@@ -9,17 +12,26 @@ public class ActorController : MonoBehaviour
 
     //settings
 
-    [SerializeField] ActorHandler _agentPrefab = null;
-    [SerializeField] ActorHandler _enemytPrefab = null;
+    [SerializeField] TextMeshProUGUI _turnCountTMP = null;
 
-    public float MoveTweenTime = 0.75f;
-    Vector2Int _playerStartingSpot = new Vector2Int(3, 2);
+    [SerializeField] Image[] _turnorderIcons = null;
+    Vector2 _smallScale = Vector2.one * 0.5f;
+
+    [SerializeField] ActorHandler[] _agentPrefab = null;
+    [SerializeField] ActorHandler _enemyPrefab = null;
+
+
+    [SerializeField] Vector2Int[] _playerStartingSpot = null;
     Vector2Int _enemyStartingSpot = new Vector2Int(6, 6);
 
-    //state
+    float _turnOrderTweenTime = 0.5f;
+    public float MoveTweenTime = 0.75f;
 
+    //state
+    int _turns = 0;
+    int _priorityIndex = 0;
     [SerializeField] List<ActorHandler> _actorTurnOrder = new List<ActorHandler>();
-    public ActorHandler PriorityActor => _actorTurnOrder[0];
+    public ActorHandler PriorityActor => _actorTurnOrder[_priorityIndex];
 
     private void Awake()
     {
@@ -28,27 +40,39 @@ public class ActorController : MonoBehaviour
 
     public void SpawnActors()
     {
-        SpawnAgent();
-        SpawnEnemy();
 
+        SpawnEnemy();
+        SpawnAgent(0);
+        SpawnAgent(1);
+        SpawnAgent(2);
+
+        for (int i = 0; i  < _actorTurnOrder.Count; i++)
+        {
+            _turnorderIcons[i].sprite = _actorTurnOrder[i].ActorSprite;
+            _turnorderIcons[i].GetComponent<RectTransform>().localScale = _smallScale;
+        }
+
+        _priorityIndex = 0;
+        _turnorderIcons[_priorityIndex].GetComponent<RectTransform>().DOScale(Vector2.one, _turnOrderTweenTime);
         PriorityActor.BeginTurn();
+        _turns = 1;
+        _turnCountTMP.text = "1";
     }
 
-    private void SpawnAgent()
+    private void SpawnAgent(int index)
     {
-        var actor = Instantiate(_agentPrefab,
-            TileController.Instance.GetTileAtVec2Int(_playerStartingSpot).VisualsTransform);
-       
-        AddActorToStartOfTurnOrder(actor);
+        var actor = Instantiate(_agentPrefab[index],
+            TileController.Instance.GetTileAtVec2Int(_playerStartingSpot[index]).VisualsTransform);
+
+        AddActorToEndOfTurnOrder(actor);
     }
 
     private void SpawnEnemy()
     {
-        var actor = Instantiate(_enemytPrefab,
+        var actor = Instantiate(_enemyPrefab,
             TileController.Instance.GetTileAtVec2Int(_enemyStartingSpot).VisualsTransform);
 
-        AddActorToEndOfTurnOrder(actor);
-
+        AddActorToStartOfTurnOrder(actor);
     }
 
 
@@ -71,10 +95,17 @@ public class ActorController : MonoBehaviour
 
     public void HandlePriorityActorTurnCompletion()
     {
-        ActorHandler completedActor = PriorityActor;
-        _actorTurnOrder.Remove(completedActor);
-        AddActorToEndOfTurnOrder(completedActor);
+        _turnorderIcons[_priorityIndex].GetComponent<RectTransform>().DOScale(_smallScale, _turnOrderTweenTime);
+        
+        _priorityIndex++;
+        if (_priorityIndex >= _actorTurnOrder.Count)
+        {
+            _priorityIndex = 0;
+            _turns ++;
+            _turnCountTMP.text = _turns.ToString();
+        }
 
+        _turnorderIcons[_priorityIndex].GetComponent<RectTransform>().DOScale(Vector2.one, _turnOrderTweenTime);
         PriorityActor.BeginTurn();
     }
 

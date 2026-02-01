@@ -115,14 +115,14 @@ public class TileHandler : MonoBehaviour
     {
         _hoverTween.Kill();
         _tileSR.color = TileController.Instance.Color_highlight;
-        _hoverTween = _visualsTransform.transform.DOLocalMoveY(_hoverYIncrease, hoverTweenTime).SetEase(Ease.OutBack);
+        //_hoverTween = _visualsTransform.transform.DOLocalMoveY(_hoverYIncrease, hoverTweenTime).SetEase(Ease.OutBack);
     }
 
     public void HalfraiseTile()
     {
         _hoverTween.Kill();
         _tileSR.color = TileController.Instance.Color_legalMove;
-        _hoverTween = _visualsTransform.transform.DOLocalMoveY(_hoverYIncrease / 2f, hoverTweenTime).SetEase(Ease.OutBack);
+        //_hoverTween = _visualsTransform.transform.DOLocalMoveY(_hoverYIncrease / 2f, hoverTweenTime).SetEase(Ease.OutBack);
         
     }
 
@@ -131,7 +131,7 @@ public class TileHandler : MonoBehaviour
         _hoverTween.Kill();
 
         _tileSR.color = TileController.Instance.Color_noMove;
-        _hoverTween = _visualsTransform.DOLocalMoveY(0, hoverTweenTime).SetEase(Ease.OutBack);
+        //_hoverTween = _visualsTransform.DOLocalMoveY(0, hoverTweenTime).SetEase(Ease.OutBack);
     }
 
     #endregion
