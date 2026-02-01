@@ -234,11 +234,20 @@ public class TileController : MonoBehaviour
     {
         if (_tileUnderCursor == null) return;
 
-        if (ActorController.Instance.PriorityActor.LegalMoves.Contains(_tileUnderCursor))
+        if (ActorController.Instance.PriorityActor.LegalMoves.Contains(_tileUnderCursor) ||
+            ActorController.Instance.PriorityActor.CurrentTile == _tileUnderCursor)
         {
-            UnraiseAllTiles();
-            ActorController.Instance.PriorityActor.SlideToNewTile(_tileUnderCursor);
+            //UnraiseAllTiles();
+            ActorController.Instance.PriorityActor.ExecuteClickViaCurrentAction(_tileUnderCursor);
+            //ActorController.Instance.PriorityActor.SlideToNewTile(_tileUnderCursor);
         }
+    }
+
+    public bool SearchForClue(TileHandler searchedLocation)
+    {
+        Debug.Log("checking for clues");
+        bool foundClue = searchedLocation.CheckRevealClue();
+        return foundClue;
     }
 
     public void HandleTileClick_RMB()
@@ -247,13 +256,8 @@ public class TileController : MonoBehaviour
 
         if (ActorController.Instance.PriorityActor.LegalMoves.Contains(_tileUnderCursor))
         {
-            Debug.Log("checking for clues");
-            bool foundClue = _tileUnderCursor.CheckRevealClue();
+            //arrest via RMB?
 
-            if (foundClue)
-            {
-                ActorController.Instance.PriorityActor.CompleteTurn();
-            }
         }
     }
 

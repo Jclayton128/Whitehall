@@ -68,7 +68,8 @@ public class TileHandler : MonoBehaviour
 
     private void OnMouseEnter()
     {
-        if (ActorController.Instance.PriorityActor.LegalMoves.Contains(this))
+        if (ActorController.Instance.PriorityActor.LegalMoves.Contains(this) ||
+            ActorController.Instance.PriorityActor.CurrentTile == this)
         {
             TileController.Instance.SetTileUnderCursor(this);
             FullraiseTile();
@@ -77,7 +78,8 @@ public class TileHandler : MonoBehaviour
 
     private void OnMouseExit()
     {
-        if (ActorController.Instance.PriorityActor.LegalMoves.Contains(this))
+        if (ActorController.Instance.PriorityActor.LegalMoves.Contains(this) ||
+            ActorController.Instance.PriorityActor.CurrentTile == this)
         {
             HalfraiseTile();
         }
