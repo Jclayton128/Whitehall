@@ -124,9 +124,9 @@ public class ActorHandler : MonoBehaviour
         //highlight possible options
         foreach (var tile in LegalMoves)
         {
-            tile.SemiHighlightTile(_abilityQueue[0]);
+            tile.ColorTileToAbility(_abilityQueue[0]);
         }
-        CurrentTile.SemiHighlightTile(AgentData.AgentAbility.Pass);
+        CurrentTile.ColorTileToAbility(AgentData.AgentAbility.Pass);
     }
 
     public void BeginTurn()

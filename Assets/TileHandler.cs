@@ -161,7 +161,7 @@ public class TileHandler : MonoBehaviour
         //_hoverTween = _visualsTransform.transform.DOLocalMoveY(_hoverYIncrease, hoverTweenTime).SetEase(Ease.OutBack);
     }
 
-    public void SemiHighlightTile(AgentData.AgentAbility abilityToDepict)
+    public void ColorTileToAbility(AgentData.AgentAbility abilityToDepict)
     {
         _hoverTween.Kill();
 
@@ -179,8 +179,14 @@ public class TileHandler : MonoBehaviour
         {
             _tileSR.color = TileController.Instance.Color_pass;
         }
+        else
+        {
+            _tileSR.color = Color.white;
+        }
 
     }
+
+
 
     public void DeHighlightTile()
     {

@@ -271,7 +271,7 @@ public class TileController : MonoBehaviour
     {
         foreach (var tile in _tilesRaw)
         {
-            tile.DeHighlightTile();
+            tile.ColorTileToAbility(AgentData.AgentAbility.None);
         }
     }
 

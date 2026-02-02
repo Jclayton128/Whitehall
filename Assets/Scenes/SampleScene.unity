@@ -821,9 +821,9 @@ MonoBehaviour:
   PassageClue: {fileID: 21300000, guid: 85ecdc9ad995a024bbc3348434f0c34b, type: 3}
   JustSearchedClue: {fileID: 21300000, guid: 92365f7f209153f4898e788df4b7ebda, type: 3}
   Color_noMove: {r: 1, g: 1, b: 1, a: 1}
-  Color_knownOccupant: {r: 0.68765575, g: 0.68765575, b: 0.9528302, a: 1}
+  Color_pass: {r: 0, g: 0, b: 1, a: 1}
   Color_legalMove: {r: 0.6455589, g: 0.8396226, b: 0.6455589, a: 1}
-  Color_highlight: {r: 0.8962264, g: 0.8770259, b: 0.6552599, a: 1}
+  Color_highlight: {r: 0.9339623, g: 0.8767621, b: 0.22467959, a: 1}
   _tilesRaw: []
 --- !u!4 &945837922
 Transform:
