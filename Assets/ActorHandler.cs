@@ -12,7 +12,7 @@ public class ActorHandler : MonoBehaviour
 
     [SerializeField] AgentData _agentData;
     public AgentData AgentData => _agentData;
-    [SerializeField] SpriteRenderer _visualSR = null;
+    [SerializeField] SpriteRenderer[] _portraitSRs = null;
 
     //state
     Tween _slideTween;
@@ -21,14 +21,24 @@ public class ActorHandler : MonoBehaviour
     public TileHandler CurrentTile => GetCurrentTile();
     public List<TileHandler> LegalMoves => GetLegalMoves();
 
-    public Sprite ActorSprite => _visualSR.sprite;
+    public Sprite ActorSprite => _portraitSRs[0].sprite;
 
     [SerializeField] List<AgentData.AgentAbility> _abilityQueue = new List<AgentData.AgentAbility>();
 
-    public void SetAgentData(AgentData data)
+    public void SetAgentData(AgentData data, int agentIndex)
     {
         _agentData = data;
-        _visualSR.sprite = _agentData.AgentSprite;
+        foreach (var sr in _portraitSRs)
+        {
+            sr.sprite = _agentData.AgentSprite;
+            sr.enabled = false;
+        }
+        _portraitSRs[agentIndex].enabled = true;
+    }
+
+    public void SetDefaultAgentData()
+    {
+        SetAgentData(_agentData, 0);
     }
 
     public void ExecuteClickViaCurrentAction(TileHandler clickedTile)

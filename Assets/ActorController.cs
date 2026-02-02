@@ -69,7 +69,7 @@ public class ActorController : MonoBehaviour
     {
         var actor = Instantiate(_agentPrefab,
             TileController.Instance.GetTileAtVec2Int(_playerStartingSpot[index]).VisualsTransform);
-        actor.SetAgentData(_agentData[index]);
+        actor.SetAgentData(_agentData[index], index + 1); //injecting the +1 manually because I want the fox to always be in the top right corner
 
         AddActorToEndOfTurnOrder(actor);
     }
@@ -79,7 +79,7 @@ public class ActorController : MonoBehaviour
         var startTile = TileController.Instance.GetTileAtVec2Int(_enemyStartingSpot);
         var actor = Instantiate(_enemyPrefab, startTile.VisualsTransform);
         startTile.SetClue(TileHandler.ClueTypes.Origin);
-
+        actor.SetDefaultAgentData();
         AddActorToStartOfTurnOrder(actor);
     }
 
