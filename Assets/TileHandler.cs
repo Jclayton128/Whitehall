@@ -13,7 +13,7 @@ public class TileHandler : MonoBehaviour
     [SerializeField] SpriteRenderer _tileSR = null;
     [SerializeField] SpriteRenderer _borderSR = null;
     [SerializeField] SpriteRenderer _clueSR = null;
-    [SerializeField] SpriteRenderer _actionSR = null;
+
     [SerializeField] Transform _visualsTransform = null;
     public Transform VisualsTransform => _visualsTransform;
 
@@ -38,7 +38,6 @@ public class TileHandler : MonoBehaviour
     {
         _coll = GetComponent<Collider2D>();
         SetClue(ClueTypes.None);
-        _actionSR.sprite = null;
     }
 
     private void Start()
@@ -80,15 +79,16 @@ public class TileHandler : MonoBehaviour
 
     private void OnMouseExit()
     {
-        if (ActorController.Instance.PriorityActor.LegalMoves.Contains(this) ||
-            ActorController.Instance.PriorityActor.CurrentTile == this)
-        {
-            SemiHighlightTile(AgentData.AgentAbility.None);
-        }
-        else
-        {
-            DeHighlightTile();
-        }
+        //if (ActorController.Instance.PriorityActor.LegalMoves.Contains(this) ||
+        //    ActorController.Instance.PriorityActor.CurrentTile == this)
+        //{
+        //    SemiHighlightTile(AgentData.AgentAbility.None);
+        //}
+        //else
+        //{
+        //    DeHighlightTile();
+        //}
+        DeHighlightTile();
         TileController.Instance.SetTileUnderCursor(null);
     }
 
@@ -157,10 +157,7 @@ public class TileHandler : MonoBehaviour
 
     public void HighlightTile()
     {
-        _previousTileColor = _tileSR.color;
-
-        _hoverTween.Kill();
-        _tileSR.color = TileController.Instance.Color_highlight;
+        _borderSR.enabled = true;
         //_hoverTween = _visualsTransform.transform.DOLocalMoveY(_hoverYIncrease, hoverTweenTime).SetEase(Ease.OutBack);
     }
 
@@ -173,24 +170,14 @@ public class TileHandler : MonoBehaviour
         if (abilityToDepict == AgentData.AgentAbility.Move)
         {
             _tileSR.color = TileController.Instance.Color_legalMove;
-            _actionSR.enabled = true;
-            _actionSR.sprite = ActorController.Instance.MoveAbilityIcon;
         }
         else if (abilityToDepict == AgentData.AgentAbility.Search)
         {
             _tileSR.color = TileController.Instance.Color_legalMove;
-            _actionSR.enabled = true;
-            _actionSR.sprite = ActorController.Instance.SearchAbilityIcon;
         }
         else if (abilityToDepict == AgentData.AgentAbility.Pass)
         {
             _tileSR.color = TileController.Instance.Color_pass;
-            _actionSR.enabled = false;
-            _tileSR.color = TileController.Instance.Color_pass;
-        }
-        else if (abilityToDepict == AgentData.AgentAbility.None)
-        {
-            _tileSR.color = _previousTileColor;
         }
 
     }
@@ -199,8 +186,7 @@ public class TileHandler : MonoBehaviour
     {
         _hoverTween.Kill();
 
-        _tileSR.color = TileController.Instance.Color_noMove;
-        _actionSR.enabled = false;
+        _borderSR.enabled = false;
         //_hoverTween = _visualsTransform.DOLocalMoveY(0, hoverTweenTime).SetEase(Ease.OutBack);
     }
 
