@@ -98,31 +98,32 @@ public class TileHandler : MonoBehaviour
 
     #region Tile Mechanics
 
-    public void SetClue(ClueTypes clueType)
+    public void SetClue(ClueTypes newClueType)
     {
-        if (clueType == ClueTypes.None)
+        if (newClueType == ClueTypes.None)
         {
-            _clueType = clueType;
+            _clueType = newClueType;
             _clueSR.sprite = null;
         }
 
-        else if (clueType == ClueTypes.Origin)
+        else if (newClueType == ClueTypes.Origin)
         {
             _clueType = ClueTypes.Origin;
             _clueSR.sprite = TileController.Instance.OriginClue;
             _clueSR.enabled = true;
         }
-        else if (clueType == ClueTypes.Passage)
+        else if (newClueType == ClueTypes.Passage)
         {                
             if (_clueType == ClueTypes.Origin)
             {
                 // do nothing; origin clues should outlast passage clues.
             }
-            else
+            else if (_clueType == ClueTypes.None)
             {
                 _clueType = ClueTypes.Passage;
                 _clueSR.sprite = null; //remain null until player check-reveals this tile
             }
+
                     
         }
         
@@ -173,7 +174,7 @@ public class TileHandler : MonoBehaviour
         }
         else if (abilityToDepict == AgentData.AgentAbility.Search)
         {
-            _tileSR.color = TileController.Instance.Color_legalMove;
+            _tileSR.color = TileController.Instance.Color_legalSearch;
         }
         else if (abilityToDepict == AgentData.AgentAbility.Pass)
         {

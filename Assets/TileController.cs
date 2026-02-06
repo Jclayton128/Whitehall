@@ -10,6 +10,8 @@ public class TileController : MonoBehaviour
 
 
     //ref
+
+
     [SerializeField] Transform _tileHolder = null;
     [SerializeField] TileHandler _tilePrefab = null;
 
@@ -29,6 +31,7 @@ public class TileController : MonoBehaviour
     public Color Color_noMove = Color.black;
     public Color Color_pass = Color.blue;
     public Color Color_legalMove = Color.green;
+    public Color Color_legalSearch = Color.green;
     public Color Color_highlight = Color.yellow;
 
     //state

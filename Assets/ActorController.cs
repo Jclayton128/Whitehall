@@ -25,7 +25,9 @@ public class ActorController : MonoBehaviour
     [SerializeField] ActorHandler _enemyPrefab = null;
 
     public Sprite MoveAbilityIcon = null;
+    public Texture2D MoveAbilityTexture = null;
     public Sprite SearchAbilityIcon = null;
+    public Texture2D SearchAbilityTexture = null;
 
     [SerializeField] Vector2Int[] _playerStartingSpot = null;
     Vector2Int _enemyStartingSpot = new Vector2Int(6, 6);

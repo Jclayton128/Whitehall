@@ -821,8 +821,9 @@ MonoBehaviour:
   PassageClue: {fileID: 21300000, guid: 85ecdc9ad995a024bbc3348434f0c34b, type: 3}
   JustSearchedClue: {fileID: 21300000, guid: 92365f7f209153f4898e788df4b7ebda, type: 3}
   Color_noMove: {r: 1, g: 1, b: 1, a: 1}
-  Color_pass: {r: 0, g: 0, b: 1, a: 1}
+  Color_pass: {r: 0.1505874, g: 0.1505874, b: 0.2264151, a: 1}
   Color_legalMove: {r: 0.6455589, g: 0.8396226, b: 0.6455589, a: 1}
+  Color_legalSearch: {r: 0.33490568, g: 1, b: 0.9859671, a: 1}
   Color_highlight: {r: 0.9339623, g: 0.8767621, b: 0.22467959, a: 1}
   _tilesRaw: []
 --- !u!4 &945837922
@@ -888,8 +889,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 08efc7ee1b3243445af1a06418281c20, type: 2}
   - {fileID: 11400000, guid: 45345521d453c324ab412b77a20c64dd, type: 2}
   _enemyPrefab: {fileID: 1229234484920448796, guid: d26e8375f6644b748bd8d05865ac8654, type: 3}
-  MoveAbilityIcon: {fileID: 21300000, guid: 85ecdc9ad995a024bbc3348434f0c34b, type: 3}
+  MoveAbilityIcon: {fileID: 21300000, guid: 292cbed5e0e706f40ad918af83c6376a, type: 3}
+  MoveAbilityTexture: {fileID: 2800000, guid: 292cbed5e0e706f40ad918af83c6376a, type: 3}
   SearchAbilityIcon: {fileID: 21300000, guid: 92365f7f209153f4898e788df4b7ebda, type: 3}
+  SearchAbilityTexture: {fileID: 2800000, guid: 92365f7f209153f4898e788df4b7ebda, type: 3}
   _playerStartingSpot:
   - {x: 1, y: 1}
   - {x: 3, y: 6}

@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _agentName: Bull
   _agentSprite: {fileID: 21300000, guid: 08513617cee844f4b88d86c52b48135f, type: 3}
-  _agentAbilities: 010000000100000002000000
+  _agentAbilities: 0100000002000000

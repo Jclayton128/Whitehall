@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _agentName: Bear
   _agentSprite: {fileID: 21300000, guid: f5e0943041cf5b247b9e7b97694f702d, type: 3}
-  _agentAbilities: 010000000200000002000000
+  _agentAbilities: 0100000002000000

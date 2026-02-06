@@ -76,6 +76,8 @@ public class ActorHandler : MonoBehaviour
         else
         {
             _abilityQueue.RemoveAt(0);
+            SetCursorMatchNextAction();
+
             if (_abilityQueue.Count == 0)
             {
                 CompleteTurn();
@@ -127,6 +129,28 @@ public class ActorHandler : MonoBehaviour
             tile.ColorTileToAbility(_abilityQueue[0]);
         }
         CurrentTile.ColorTileToAbility(AgentData.AgentAbility.Pass);
+        
+        SetCursorMatchNextAction();
+
+    }
+
+    private void SetCursorMatchNextAction()
+    {
+        if (_abilityQueue.Count == 0)
+        {
+            Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
+            return;
+        }
+
+        if (_abilityQueue[0] == AgentData.AgentAbility.Move)
+        {
+            Cursor.SetCursor(ActorController.Instance.MoveAbilityTexture, new Vector2(92, 92), CursorMode.Auto);
+        }
+        else if (_abilityQueue[0] == AgentData.AgentAbility.Search)
+        {
+            Cursor.SetCursor(ActorController.Instance.SearchAbilityTexture, new Vector2(136, 136), CursorMode.Auto);
+        }
+
     }
 
     public void BeginTurn()
