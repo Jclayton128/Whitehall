@@ -33,6 +33,7 @@ public class TileHandler : MonoBehaviour
     [SerializeField] ClueTypes _clueType = ClueTypes.None;
     //[SerializeField] bool _isClueRevealed = false;
     Color _previousTileColor;
+    public int TileIndex;
 
     private void Awake()
     {

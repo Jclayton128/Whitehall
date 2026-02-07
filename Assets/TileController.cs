@@ -24,6 +24,8 @@ public class TileController : MonoBehaviour
     [SerializeField] float _tileGap_x = 0.5f;
     [SerializeField] float _tileGap_y = 0.5f;
 
+    [SerializeField] TileLinkageHandler _tileLinkagePrefab = null;
+
     public Sprite OriginClue = null;
     public Sprite PassageClue = null;
     public Sprite JustSearchedClue = null;
@@ -39,7 +41,8 @@ public class TileController : MonoBehaviour
     [SerializeField] List<TileHandler> _tilesRaw = new List<TileHandler>();
     Dictionary<Vector2Int, TileHandler> _tilesLocation = new Dictionary<Vector2Int, TileHandler>();
 
-    [SerializeField] TileHandler _tileUnderCursor;
+    TileHandler _tileUnderCursor;
+    Dictionary<int, TileLinkageHandler> _cantorIndexDictionary = new Dictionary<int, TileLinkageHandler>();
 
     #region Arena Setup
 
@@ -53,11 +56,11 @@ public class TileController : MonoBehaviour
     public void BuildNewArena()
     {
         ConstructArena();
-        LinkTiles();
+        LinkTilesLogically();
+        LinkTilesGraphically();
         RecenterTiles();
     }
 
- 
 
     private void ConstructArena()
     {
@@ -86,9 +89,11 @@ public class TileController : MonoBehaviour
 
         _tilesRaw.Add(newTile);
         _tilesLocation.Add(indexPos, newTile);
+
+        newTile.TileIndex = _tilesRaw.IndexOf(newTile);
     }
 
-    private void LinkTiles()
+    private void LinkTilesLogically()
     {
         foreach (var tileIndex in _tilesLocation.Keys)
         {
@@ -100,6 +105,50 @@ public class TileController : MonoBehaviour
             }
         }
     }
+
+    private void LinkTilesGraphically()
+    {
+        foreach (var tile in _tilesRaw)
+        {
+            foreach (var neighbor in tile.LinkedTiles)
+            {
+                int cantorIndex = ConvertIndicesIntoCantorIndex(tile.TileIndex, neighbor.TileIndex);
+                //convert tile and neighbor index into a CantorIndex int;
+                //Debug.Log("CantorIndex: " + cantorIndex);
+
+                //Check cantorIndex if that CantorIndex int is already in the dictionary.
+                if (_cantorIndexDictionary.ContainsKey(cantorIndex))
+                {
+                    //If yes, then continue
+                    //This linkage must already be in the dictionary
+                    Debug.Log("bump");
+                    continue;
+                }
+                else
+                {   
+                    //if not, create a new tilelinkage with that CI int and add to dictionary
+
+                    TileLinkageHandler newTileLinkage = Instantiate(_tileLinkagePrefab, _tileHolder);
+                    newTileLinkage.SetTileLinkage(tile, neighbor, cantorIndex);
+                    _cantorIndexDictionary.Add(cantorIndex, newTileLinkage);
+                }
+            }
+        }
+    }
+
+    private int ConvertIndicesIntoCantorIndex(int index1, int index2)
+    {
+
+        if (index1 < 0 || index2 < 0)
+        {
+            throw new ArgumentException("Inputs must be non-negative integers.");
+        }
+        
+
+        return ((index1 + index2) * (index1 + index2 + 1)) / 2 + index2;
+    }
+
+
 
     private List<TileHandler> GetNeighboringTiles(Vector2Int originTile)
     {
