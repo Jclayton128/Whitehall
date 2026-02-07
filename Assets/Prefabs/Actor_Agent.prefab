@@ -48,6 +48,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3292707244480955132, guid: 5b47c928c9d858a4587e1c58488c55a4, type: 3}
+      propertyPath: _moveRange
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 6046142414020655841, guid: 5b47c928c9d858a4587e1c58488c55a4, type: 3}
       propertyPath: m_Name
       value: Actor_Agent

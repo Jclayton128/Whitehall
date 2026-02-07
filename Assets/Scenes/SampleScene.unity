@@ -818,7 +818,7 @@ MonoBehaviour:
   _tileGap_x: 0.3
   _tileGap_y: 0.3
   OriginClue: {fileID: 21300000, guid: 7450cd284991ec948b569381b50155a4, type: 3}
-  PassageClue: {fileID: 21300000, guid: 85ecdc9ad995a024bbc3348434f0c34b, type: 3}
+  PassageClue: {fileID: 21300000, guid: 292cbed5e0e706f40ad918af83c6376a, type: 3}
   JustSearchedClue: {fileID: 21300000, guid: 92365f7f209153f4898e788df4b7ebda, type: 3}
   Color_noMove: {r: 1, g: 1, b: 1, a: 1}
   Color_pass: {r: 0.1505874, g: 0.1505874, b: 0.2264151, a: 1}

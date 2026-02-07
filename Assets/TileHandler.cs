@@ -70,6 +70,7 @@ public class TileHandler : MonoBehaviour
     private void OnMouseEnter()
     {
         if (ActorController.Instance.PriorityActor.LegalMoves.Contains(this) ||
+            ActorController.Instance.PriorityActor.LegalSearches.Contains(this) ||
             ActorController.Instance.PriorityActor.CurrentTile == this)
         {
             TileController.Instance.SetTileUnderCursor(this);

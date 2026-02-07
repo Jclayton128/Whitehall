@@ -38,7 +38,8 @@ public class TileController : MonoBehaviour
     bool _isProcessingClick = false;
     [SerializeField] List<TileHandler> _tilesRaw = new List<TileHandler>();
     Dictionary<Vector2Int, TileHandler> _tilesLocation = new Dictionary<Vector2Int, TileHandler>();
-    TileHandler _tileUnderCursor;
+
+    [SerializeField] TileHandler _tileUnderCursor;
 
     #region Arena Setup
 
@@ -237,13 +238,15 @@ public class TileController : MonoBehaviour
     {
         if (_tileUnderCursor == null) return;
 
-        if (ActorController.Instance.PriorityActor.LegalMoves.Contains(_tileUnderCursor) ||
-            ActorController.Instance.PriorityActor.CurrentTile == _tileUnderCursor)
-        {
-            //UnraiseAllTiles();
-            ActorController.Instance.PriorityActor.ExecuteClickViaCurrentAction(_tileUnderCursor);
-            //ActorController.Instance.PriorityActor.SlideToNewTile(_tileUnderCursor);
-        }
+        ActorController.Instance.PriorityActor.ExecuteClickViaCurrentAction(_tileUnderCursor);
+
+        //if (ActorController.Instance.PriorityActor.LegalMoves.Contains(_tileUnderCursor) ||
+        //    ActorController.Instance.PriorityActor.CurrentTile == _tileUnderCursor)
+        //{
+        //    //UnraiseAllTiles();
+        //    ActorController.Instance.PriorityActor.ExecuteClickViaCurrentAction(_tileUnderCursor);
+        //    //ActorController.Instance.PriorityActor.SlideToNewTile(_tileUnderCursor);
+        //}
     }
 
     public bool SearchForClue(TileHandler searchedLocation)

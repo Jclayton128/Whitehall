@@ -14,12 +14,16 @@ public class ActorHandler : MonoBehaviour
     public AgentData AgentData => _agentData;
     [SerializeField] SpriteRenderer[] _portraitSRs = null;
 
+    [SerializeField] int _moveRange = 1;
+    [SerializeField] int _searchRange = 1;
+
     //state
     Tween _slideTween;
     public bool IsAgent => _isAgent;
 
     public TileHandler CurrentTile => GetCurrentTile();
     public List<TileHandler> LegalMoves => GetLegalMoves();
+    public List<TileHandler> LegalSearches => GetLegalSearches();
 
     public Sprite ActorSprite => _portraitSRs[0].sprite;
 
@@ -50,13 +54,13 @@ public class ActorHandler : MonoBehaviour
             return;
         }
 
-        if (_abilityQueue[0] == AgentData.AgentAbility.Move)
+        if (_abilityQueue[0] == AgentData.AgentAbility.Move && LegalMoves.Contains(clickedTile))
         {
             TileController.Instance.DeHighlightAllTiles();
             SlideToNewTile(clickedTile);
             return;
         }
-        else if (_abilityQueue[0] == AgentData.AgentAbility.Search)
+        else if (_abilityQueue[0] == AgentData.AgentAbility.Search && LegalSearches.Contains(clickedTile))
         {
             bool foundClue = TileController.Instance.SearchForClue(clickedTile);
             if (foundClue)
@@ -87,7 +91,6 @@ public class ActorHandler : MonoBehaviour
                 TileController.Instance.DeHighlightAllTiles();
                 if (_isAgent)
                 {
-
                     HighlightPossibleOptions();
                 }
             }
@@ -114,22 +117,100 @@ public class ActorHandler : MonoBehaviour
     private List<TileHandler> GetLegalMoves()
     {
         //LegalMoves.Clear();
-        return CurrentTile.LinkedTiles;
+        List<TileHandler> legalMoves = new List<TileHandler>();
+
+        if (_moveRange == 1)
+        {
+            foreach (var move in CurrentTile.LinkedTiles)
+            {
+                if (move.Occupant == null ||
+                    (move.Occupant != null && !move.Occupant.IsAgent))
+                {
+                    legalMoves.Add(move);
+                }
+            }
+        }
+        else if (_moveRange == 2)
+        {
+            foreach (var move in CurrentTile.LinkedTiles)
+            {
+                if (move.Occupant == null ||
+                    (move.Occupant != null && !move.Occupant.IsAgent))
+                {
+                    legalMoves.Add(move);
+                }
+
+                foreach (var move2 in move.LinkedTiles)
+                {
+                    if ((move2.Occupant == null ||
+                        (move2.Occupant != null && !move2.Occupant.IsAgent))
+                        && move2 != move)
+                    {
+                        legalMoves.Add(move2);
+                    }
+                }
+
+            }
+
+        }
+
+            return legalMoves;
     }
 
-    #region AI
+    private List<TileHandler> GetLegalSearches()
+    {
+        //LegalMoves.Clear();
+        List<TileHandler> legalSearches = new List<TileHandler>();
 
+        if (_searchRange == 1)
+        {
+            foreach (var search in CurrentTile.LinkedTiles)
+            {
+                legalSearches.Add(search);
+            }
+        }
+        else if (_searchRange == 2)
+        {
+            foreach (var search in CurrentTile.LinkedTiles)
+            {
+                legalSearches.Add(search);
+
+                foreach (var search2 in search.LinkedTiles)
+                {
+                    legalSearches.Add(search2);
+                }
+
+            }
+
+        }
+
+        return legalSearches;
+
+    }
     private void HighlightPossibleOptions()
     {
         if (!_isAgent) return;
 
         //highlight possible options
-        foreach (var tile in LegalMoves)
+        if (_abilityQueue[0] == AgentData.AgentAbility.Move)
         {
-            tile.ColorTileToAbility(_abilityQueue[0]);
+            foreach (var tile in LegalMoves)
+            {
+                tile.ColorTileToAbility(_abilityQueue[0]);
+            }
         }
-        CurrentTile.ColorTileToAbility(AgentData.AgentAbility.Pass);
-        
+        else if (_abilityQueue[0] == AgentData.AgentAbility.Search)
+        {
+            Debug.Log($"Legal searches: {LegalSearches.Count}");
+            foreach (var tile in LegalSearches)
+            {
+                tile.ColorTileToAbility(_abilityQueue[0]);
+            }
+        }
+
+
+            CurrentTile.ColorTileToAbility(AgentData.AgentAbility.Pass);
+
         SetCursorMatchNextAction();
 
     }
@@ -152,6 +233,9 @@ public class ActorHandler : MonoBehaviour
         }
 
     }
+
+
+    #region AI
 
     public void BeginTurn()
     {
