@@ -64,6 +64,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Actor_Enemy
       objectReference: {fileID: 0}
+    - target: {fileID: 7364725799973135035, guid: 5b47c928c9d858a4587e1c58488c55a4, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.41
+      objectReference: {fileID: 0}
+    - target: {fileID: 7364725799973135035, guid: 5b47c928c9d858a4587e1c58488c55a4, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.41
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

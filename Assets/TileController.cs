@@ -251,7 +251,6 @@ public class TileController : MonoBehaviour
 
     public bool SearchForClue(TileHandler searchedLocation)
     {
-        Debug.Log("checking for clues");
         bool foundClue = searchedLocation.CheckRevealClue();
         return foundClue;
     }

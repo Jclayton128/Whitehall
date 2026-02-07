@@ -818,7 +818,7 @@ MonoBehaviour:
   _tileGap_x: 0.3
   _tileGap_y: 0.3
   OriginClue: {fileID: 21300000, guid: 7450cd284991ec948b569381b50155a4, type: 3}
-  PassageClue: {fileID: 21300000, guid: 292cbed5e0e706f40ad918af83c6376a, type: 3}
+  PassageClue: {fileID: 21300000, guid: 44f7c3e80c422d548b323a56174e63aa, type: 3}
   JustSearchedClue: {fileID: 21300000, guid: 92365f7f209153f4898e788df4b7ebda, type: 3}
   Color_noMove: {r: 1, g: 1, b: 1, a: 1}
   Color_pass: {r: 0.1505874, g: 0.1505874, b: 0.2264151, a: 1}
@@ -826,6 +826,7 @@ MonoBehaviour:
   Color_legalSearch: {r: 0.33490568, g: 1, b: 0.9859671, a: 1}
   Color_highlight: {r: 0.9339623, g: 0.8767621, b: 0.22467959, a: 1}
   _tilesRaw: []
+  _tileUnderCursor: {fileID: 0}
 --- !u!4 &945837922
 Transform:
   m_ObjectHideFlags: 0

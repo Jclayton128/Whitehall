@@ -12,7 +12,7 @@ public class ActorHandler : MonoBehaviour
 
     [SerializeField] AgentData _agentData;
     public AgentData AgentData => _agentData;
-    [SerializeField] SpriteRenderer[] _portraitSRs = null;
+    [SerializeField] SpriteRenderer _portraitSR = null;
 
     [SerializeField] int _moveRange = 1;
     [SerializeField] int _searchRange = 1;
@@ -25,19 +25,15 @@ public class ActorHandler : MonoBehaviour
     public List<TileHandler> LegalMoves => GetLegalMoves();
     public List<TileHandler> LegalSearches => GetLegalSearches();
 
-    public Sprite ActorSprite => _portraitSRs[0].sprite;
+    public Sprite ActorSprite => _portraitSR.sprite;
 
     [SerializeField] List<AgentData.AgentAbility> _abilityQueue = new List<AgentData.AgentAbility>();
 
     public void SetAgentData(AgentData data, int agentIndex)
     {
         _agentData = data;
-        foreach (var sr in _portraitSRs)
-        {
-            sr.sprite = _agentData.AgentSprite;
-            sr.enabled = false;
-        }
-        _portraitSRs[agentIndex].enabled = true;
+        _portraitSR.sprite = data.AgentSprite;
+        _portraitSR.enabled = true;
     }
 
     public void SetDefaultAgentData()
@@ -49,7 +45,6 @@ public class ActorHandler : MonoBehaviour
     {
         if (clickedTile == CurrentTile)
         {
-            Debug.Log("skipping action");
             CompleteAction();
             return;
         }
@@ -201,7 +196,6 @@ public class ActorHandler : MonoBehaviour
         }
         else if (_abilityQueue[0] == AgentData.AgentAbility.Search)
         {
-            Debug.Log($"Legal searches: {LegalSearches.Count}");
             foreach (var tile in LegalSearches)
             {
                 tile.ColorTileToAbility(_abilityQueue[0]);
