@@ -57,9 +57,13 @@ public class TileController : MonoBehaviour
     {
         ConstructArena();
         LinkTilesLogically();
+
+        TrimTilesLogically();
+
         LinkTilesGraphically();
         RecenterTiles();
     }
+
 
 
     private void ConstructArena()
@@ -106,6 +110,14 @@ public class TileController : MonoBehaviour
         }
     }
 
+    private void TrimTilesLogically()
+    {
+        foreach (var tile in _tilesRaw)
+        {
+            tile.RemoveRandomLinkedTiles();
+        }
+    }
+
     private void LinkTilesGraphically()
     {
         foreach (var tile in _tilesRaw)
@@ -143,9 +155,22 @@ public class TileController : MonoBehaviour
         {
             throw new ArgumentException("Inputs must be non-negative integers.");
         }
-        
 
-        return ((index1 + index2) * (index1 + index2 + 1)) / 2 + index2;
+        int x;
+        int y;
+
+        if (index1 > index2)
+        {
+            x = index1;
+            y = index2;
+        }
+        else
+        {
+            x = index2;
+            y = index1;
+        }
+
+        return ((x + y) * (x + y + 1)) / 2 + y;
     }
 
 

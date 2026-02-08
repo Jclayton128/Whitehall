@@ -1,9 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using DG.Tweening;
 using TMPro;
-using System;
+using UnityEngine;
 
 public class TileHandler : MonoBehaviour
 {
@@ -62,6 +62,105 @@ public class TileHandler : MonoBehaviour
             LinkedTiles.Add(tileToLink);
         }
 
+    }
+
+    public static void Shuffle(List<TileHandler> list)
+    {
+        System.Random r = new System.Random();
+        int n = list.Count;
+        while (n > 1)
+        {
+            n--;
+            // Pick a random element from the remaining elements
+            int k = r.Next(n + 1);
+            // Swap the current element with the randomly chosen element
+            TileHandler value = list[k];
+            list[k] = list[n];
+            list[n] = value;
+        }
+    }
+
+    public void RemoveRandomLinkedTiles()
+    {
+        List<TileHandler> quickDeck = new List<TileHandler>(LinkedTiles);
+
+        Shuffle(quickDeck);
+
+        if (LinkedTiles.Count >= 6)
+        {
+            //Main, remove 3;
+
+            TileHandler r0 = quickDeck[0];
+            TileHandler r1 = quickDeck[1];
+            TileHandler r2 = quickDeck[2];
+
+
+            if (r0.LinkedTiles.Count <= 2)
+            {
+                //removing this might reduce too many options for the selected neighbor. do nothing
+            }
+            else
+            {
+                r0.RemoveSpecificLinkedTile(this);
+                LinkedTiles.Remove(r0);
+            }
+
+
+            if (r1.LinkedTiles.Count <= 2)
+            {
+                //removing this might reduce too many options for the selected neighbor. do nothing
+            }
+            else
+            {
+                r1.RemoveSpecificLinkedTile(this);
+                LinkedTiles.Remove(r1);
+            }
+
+
+            if (r2.LinkedTiles.Count <= 2)
+            {
+                //removing this might reduce too many options for the selected neighbor. do nothing
+            }
+            else
+            {
+                r2.RemoveSpecificLinkedTile(this);
+                LinkedTiles.Remove(r2);
+            }
+        }
+        else if (LinkedTiles.Count >= 4)
+        {
+            //edge, remove 1
+
+            TileHandler r0 = quickDeck[0];
+
+            if (r0.LinkedTiles.Count <= 2)
+            {
+                //removing this might reduce too many options for the selected neighbor. do nothing
+            }
+            else
+            {
+                r0.RemoveSpecificLinkedTile(this);
+                LinkedTiles.Remove(r0);
+            }
+
+        }
+        else if (LinkedTiles.Count == 3)
+        {
+            //corner, remove none
+
+        }
+        else
+        {
+            //already has been trimmed via neighbor, remove no more
+        }
+    }
+
+    public void RemoveSpecificLinkedTile(TileHandler tileToRemove)
+    {
+        if (LinkedTiles.Contains(tileToRemove))
+        {
+            LinkedTiles.Remove(tileToRemove);
+        }
     }
 
     #endregion
