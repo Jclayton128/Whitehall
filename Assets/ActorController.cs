@@ -41,6 +41,8 @@ public class ActorController : MonoBehaviour
     [SerializeField] List<ActorHandler> _actorTurnOrder = new List<ActorHandler>();
     public ActorHandler PriorityActor => _actorTurnOrder[_priorityIndex];
 
+    public ActorHandler Enemy { get; private set; }
+
     private void Awake()
     {
         Instance = this;
@@ -83,6 +85,7 @@ public class ActorController : MonoBehaviour
         startTile.SetClue(TileHandler.ClueTypes.Origin);
         actor.SetDefaultAgentData();
         AddActorToStartOfTurnOrder(actor);
+        Enemy = actor;
     }
 
 

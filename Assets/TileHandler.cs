@@ -13,6 +13,7 @@ public class TileHandler : MonoBehaviour
     [SerializeField] SpriteRenderer _tileSR = null;
     [SerializeField] SpriteRenderer _borderSR = null;
     [SerializeField] SpriteRenderer _clueSR = null;
+    [SerializeField] TextMeshPro _text = null;
 
     [SerializeField] Transform _visualsTransform = null;
     public Transform VisualsTransform => _visualsTransform;
@@ -33,7 +34,8 @@ public class TileHandler : MonoBehaviour
     [SerializeField] ClueTypes _clueType = ClueTypes.None;
     //[SerializeField] bool _isClueRevealed = false;
     Color _previousTileColor;
-    public int TileIndex;
+    public int TileIndex { get; private set; }
+
 
     private void Awake()
     {
@@ -49,6 +51,12 @@ public class TileHandler : MonoBehaviour
 
 
     #region Tile Setup
+
+    public void AssignIndexNumber(int indexNumber)
+    {
+        TileIndex = indexNumber;
+        _text.text = TileIndex.ToString();
+    }
 
     public void AssignIndexPos(Vector2Int index)
     {

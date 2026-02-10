@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEngine;
 
@@ -94,7 +95,7 @@ public class TileController : MonoBehaviour
         _tilesRaw.Add(newTile);
         _tilesLocation.Add(indexPos, newTile);
 
-        newTile.TileIndex = _tilesRaw.IndexOf(newTile);
+        newTile.AssignIndexNumber(_tilesRaw.IndexOf(newTile));
     }
 
     private void LinkTilesLogically()
@@ -133,7 +134,7 @@ public class TileController : MonoBehaviour
                 {
                     //If yes, then continue
                     //This linkage must already be in the dictionary
-                    Debug.Log("bump");
+                    
                     continue;
                 }
                 else
@@ -226,6 +227,39 @@ public class TileController : MonoBehaviour
     #endregion
 
     #region Helpers
+
+ 
+
+    public List<TileHandler> GetShortestPathToDestination(TileHandler startingTile, TileHandler destinationTile)
+    {
+        List<List<TileHandler>> pathsAttempted = new List<List<TileHandler>>();
+        int cheapestPathCost = int.MaxValue;
+        List<TileHandler> pathToBeat = new List<TileHandler>();
+        List<TileHandler> walker = new List<TileHandler>();
+
+        bool hasExhaustedAllOptions = false;
+        while (hasExhaustedAllOptions == false)
+        {
+            var returnedPath = DispatchRouteFinder(startingTile, destinationTile);
+
+            if (returnedPath.Count < cheapestPathCost)
+            {
+                pathToBeat = returnedPath;
+            }
+        }
+
+        return pathToBeat;
+    }
+
+    private List<TileHandler> DispatchRouteFinder(TileHandler startingTile, TileHandler destinationTile) 
+    { 
+        List<TileHandler> testPath = new List<TileHandler>();
+
+        return testPath;
+    }
+
+
+
     public Vector2Int GetVec2Int(TileHandler tile)
     {
         Vector2Int origin = Vector2Int.zero;

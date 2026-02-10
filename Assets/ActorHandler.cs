@@ -33,7 +33,16 @@ public class ActorHandler : MonoBehaviour
     {
         _agentData = data;
         _portraitSR.sprite = data.AgentSprite;
-        _portraitSR.enabled = true;
+
+        if (_isAgent)
+        {
+            ShowSprite();
+        }
+        else
+        {
+            HideSprite();
+        }
+
     }
 
     public void SetDefaultAgentData()
@@ -228,6 +237,15 @@ public class ActorHandler : MonoBehaviour
 
     }
 
+    public void ShowSprite()
+    {
+        _portraitSR.enabled = true;
+    }
+
+    public void HideSprite()
+    {
+        _portraitSR.enabled = false;
+    }
 
     #region AI
 
