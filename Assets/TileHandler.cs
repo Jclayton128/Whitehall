@@ -36,11 +36,14 @@ public class TileHandler : MonoBehaviour
     Color _previousTileColor;
     public int TileIndex { get; private set; }
 
+    public TileHandler PreviousTile;
+
 
     private void Awake()
     {
         _coll = GetComponent<Collider2D>();
         SetClue(ClueTypes.None);
+        PreviousTile = null;
     }
 
     private void Start()

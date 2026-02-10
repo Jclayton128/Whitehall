@@ -226,37 +226,95 @@ public class TileController : MonoBehaviour
 
     #endregion
 
-    #region Helpers
+    #region Pathfinding
 
- 
 
     public List<TileHandler> GetShortestPathToDestination(TileHandler startingTile, TileHandler destinationTile)
     {
-        List<List<TileHandler>> pathsAttempted = new List<List<TileHandler>>();
-        int cheapestPathCost = int.MaxValue;
-        List<TileHandler> pathToBeat = new List<TileHandler>();
-        List<TileHandler> walker = new List<TileHandler>();
+        Stack<TileHandler> currentCheckPath = new Stack<TileHandler>();
 
-        bool hasExhaustedAllOptions = false;
-        while (hasExhaustedAllOptions == false)
+        List<TileHandler> tilesChecked = new List<TileHandler>();
+        Queue<TileHandler> tilesToCheck = new Queue<TileHandler>();
+
+        tilesToCheck.Enqueue(startingTile);
+
+        TileHandler tileBeingChecked;
+
+        while (tilesToCheck.Count > 0)
         {
-            var returnedPath = DispatchRouteFinder(startingTile, destinationTile);
+            
+            tileBeingChecked = tilesToCheck.Dequeue();
 
-            if (returnedPath.Count < cheapestPathCost)
+            if (tileBeingChecked ==  destinationTile)
             {
-                pathToBeat = returnedPath;
+                Debug.Log("found destination!");
+                break;
+            }
+
+            tilesChecked.Add(tileBeingChecked);
+            foreach (var tile in tileBeingChecked.LinkedTiles)
+            {
+                if (tilesChecked.Contains(tile) || tilesToCheck.Contains(tile))
+                {
+
+                }
+                else
+                {
+                    tilesToCheck.Enqueue(tile);
+                    Debug.Log($"Enqueueing {tile.TileIndex} (child of {tileBeingChecked.TileIndex})");
+
+                    if (tile.PreviousTile == null)
+                    {
+                        tile.PreviousTile = tileBeingChecked;
+                    }
+
+                }
+
+            }
+            //Debug.Log($"checked {tilesChecked.Count} tiles. {tilesToCheck.Count} in queue.");
+            
+
+            if (tilesChecked.Count > 500)
+            {
+                Debug.Log("Break at 500!");
+                break;
             }
         }
 
-        return pathToBeat;
+        currentCheckPath.Push(destinationTile);
+        TileHandler reverseWalker = null;
+
+        int breaker = 40;
+        while (reverseWalker != startingTile)
+        {
+            reverseWalker = currentCheckPath.Peek().PreviousTile;
+            currentCheckPath.Push(reverseWalker);
+
+            breaker--;
+            if (breaker == 0)
+            {
+                Debug.Log("path breaker");
+                break;
+            }
+        }
+
+        List<TileHandler> pathAsList = new List<TileHandler>(currentCheckPath);
+
+        string pathRoute = "Winning path is through: ";
+        for (int i = 0; i < pathAsList.Count; i++)
+        {
+            pathRoute += pathAsList[i].TileIndex + ", ";
+        }
+        Debug.Log(pathRoute);
+        return pathAsList;
     }
 
-    private List<TileHandler> DispatchRouteFinder(TileHandler startingTile, TileHandler destinationTile) 
-    { 
-        List<TileHandler> testPath = new List<TileHandler>();
 
-        return testPath;
-    }
+    #endregion
+
+    #region Helpers
+
+
 
 
 

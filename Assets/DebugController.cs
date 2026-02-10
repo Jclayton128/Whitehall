@@ -22,5 +22,13 @@ public class DebugController : MonoBehaviour
                 ActorController.Instance.Enemy.HideSprite();
             }
         }
+
+        if (Input.GetKeyUp(KeyCode.Z))
+        {
+            Debug.Log("Beginning pathfinding from active actor to Fox");
+            TileController.Instance.GetShortestPathToDestination(
+                ActorController.Instance.PriorityActor.CurrentTile,
+                ActorController.Instance.Enemy.CurrentTile);
+        }
     }
 }
