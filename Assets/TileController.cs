@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public class TileController : MonoBehaviour
 {
@@ -44,6 +45,7 @@ public class TileController : MonoBehaviour
 
     TileHandler _tileUnderCursor;
     Dictionary<int, TileLinkageHandler> _cantorIndexDictionary = new Dictionary<int, TileLinkageHandler>();
+    public TileHandler FoxDestinationTile;
 
     #region Arena Setup
 
@@ -62,6 +64,9 @@ public class TileController : MonoBehaviour
         TrimTilesLogically();
 
         LinkTilesGraphically();
+
+        SetFoxDestinationTile();
+
         RecenterTiles();
     }
 
@@ -199,7 +204,23 @@ public class TileController : MonoBehaviour
 
         return neighboringTiles;
     }
+    private void SetFoxDestinationTile()
+    {
+        //get an edge or next-to-edge tile
 
+        List<TileHandler> possibleOptions = new List<TileHandler>();    
+
+        foreach (var tile in _tilesRaw)
+        {
+            if (tile.IndexPos.x == 0)
+            {
+                possibleOptions.Add(tile);
+            }
+        }
+
+        int rand = UnityEngine.Random.Range(0, possibleOptions.Count);
+        FoxDestinationTile = possibleOptions[rand];
+    }
     private void RecenterTiles()
     {
         Vector2 newPos = Vector2.zero;
@@ -229,7 +250,7 @@ public class TileController : MonoBehaviour
     #region Pathfinding
 
 
-    public List<TileHandler> GetShortestPathToDestination(TileHandler startingTile, TileHandler destinationTile)
+    public List<TileHandler> GetShortestPathToDestination(TileHandler startingTile, TileHandler destinationTile, bool isBlockedByAgents)
     {
         Stack<TileHandler> currentCheckPath = new Stack<TileHandler>();
 
@@ -247,36 +268,51 @@ public class TileController : MonoBehaviour
 
             if (tileBeingChecked ==  destinationTile)
             {
-                Debug.Log("found destination!");
+                //Debug.Log("found destination!");
                 break;
             }
 
             tilesChecked.Add(tileBeingChecked);
-            foreach (var tile in tileBeingChecked.LinkedTiles)
+
+            if (isBlockedByAgents && tileBeingChecked.Occupant != null && tileBeingChecked.Occupant.IsAgent)
             {
-                if (tilesChecked.Contains(tile) || tilesToCheck.Contains(tile))
-                {
+                Debug.Log($"blocked at {tileBeingChecked.TileIndex}");
 
-                }
-                else
+            }
+            else
+            {
+                foreach (var tile in tileBeingChecked.LinkedTiles)
                 {
-                    tilesToCheck.Enqueue(tile);
-                    Debug.Log($"Enqueueing {tile.TileIndex} (child of {tileBeingChecked.TileIndex})");
-
-                    if (tile.PreviousTile == null)
+                    if (tilesChecked.Contains(tile) || tilesToCheck.Contains(tile))
                     {
-                        tile.PreviousTile = tileBeingChecked;
+
+                    }
+                    else if (isBlockedByAgents && tile.Occupant != null && tile.Occupant.IsAgent)
+                    {
+                        Debug.Log($"blocked at {tile.TileIndex}");
+                    }
+                    else
+                    {
+                        tilesToCheck.Enqueue(tile);
+                        //Debug.Log($"Enqueueing {tile.TileIndex} (child of {tileBeingChecked.TileIndex})");
+
+                        if (tile.PreviousTile == null)
+                        {
+                            tile.PreviousTile = tileBeingChecked;
+                        }
+
                     }
 
                 }
-
             }
+
+               
             //Debug.Log($"checked {tilesChecked.Count} tiles. {tilesToCheck.Count} in queue.");
             
 
             if (tilesChecked.Count > 500)
             {
-                Debug.Log("Break at 500!");
+                //Debug.Log("Break at 500!");
                 break;
             }
         }
@@ -293,7 +329,7 @@ public class TileController : MonoBehaviour
             breaker--;
             if (breaker == 0)
             {
-                Debug.Log("path breaker");
+                //Debug.Log("path breaker");
                 break;
             }
         }

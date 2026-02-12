@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using System;
+using UnityEngine.Rendering;
 
 
 public class ActorHandler : MonoBehaviour
@@ -251,6 +252,11 @@ public class ActorHandler : MonoBehaviour
 
     public void BeginTurn()
     {
+        if (CurrentTile == TileController.Instance.FoxDestinationTile)
+        {
+            Debug.Log("Fox wins!");
+        }
+
         _abilityQueue = new List<AgentData.AgentAbility>(_agentData.AgentAbilities);
         TileController.Instance.DeHighlightAllTiles();
         if (_isAgent)
@@ -259,12 +265,16 @@ public class ActorHandler : MonoBehaviour
         }
         else
         {
-            Debug.Log("Monster does his movement...");
+            Debug.Log("Fox does his movement...");
 
-            int rand = UnityEngine.Random.Range(0, LegalMoves.Count);
-            var newTile = LegalMoves[rand];
-            newTile.SetClue(TileHandler.ClueTypes.Passage);
-            SlideToNewTile(newTile);
+            var p = TileController.Instance.GetShortestPathToDestination(CurrentTile, TileController.Instance.FoxDestinationTile, true);
+
+            if (p.Count > 1)
+            {
+                var newTile = p[1];
+                newTile.SetClue(TileHandler.ClueTypes.Passage);
+                SlideToNewTile(newTile);
+            }
         }
 
     }

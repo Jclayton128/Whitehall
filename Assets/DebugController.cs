@@ -23,12 +23,12 @@ public class DebugController : MonoBehaviour
             }
         }
 
-        if (Input.GetKeyUp(KeyCode.Z))
-        {
-            Debug.Log("Beginning pathfinding from active actor to Fox");
-            TileController.Instance.GetShortestPathToDestination(
-                ActorController.Instance.PriorityActor.CurrentTile,
-                ActorController.Instance.Enemy.CurrentTile);
-        }
+        //if (Input.GetKeyUp(KeyCode.Z))
+        //{
+        //    Debug.Log("Beginning pathfinding from active actor to Fox");
+        //    TileController.Instance.GetShortestPathToDestination(
+        //        ActorController.Instance.PriorityActor.CurrentTile,
+        //        ActorController.Instance.Enemy.CurrentTile, fal);
+        //}
     }
 }
