@@ -252,6 +252,11 @@ public class TileController : MonoBehaviour
 
     public List<TileHandler> GetShortestPathToDestination(TileHandler startingTile, TileHandler destinationTile, bool isBlockedByAgents)
     {
+        foreach (var tile in _tilesRaw)
+        {
+            tile.PreviousTile = null;
+        }
+
         Stack<TileHandler> currentCheckPath = new Stack<TileHandler>();
 
         List<TileHandler> tilesChecked = new List<TileHandler>();
@@ -294,7 +299,7 @@ public class TileController : MonoBehaviour
                     else
                     {
                         tilesToCheck.Enqueue(tile);
-                        //Debug.Log($"Enqueueing {tile.TileIndex} (child of {tileBeingChecked.TileIndex})");
+                        Debug.Log($"Enqueueing {tile.TileIndex} (child of {tileBeingChecked.TileIndex})");
 
                         if (tile.PreviousTile == null)
                         {
