@@ -14,6 +14,8 @@ public class TileHandler : MonoBehaviour
     [SerializeField] SpriteRenderer _borderSR = null;
     [SerializeField] SpriteRenderer _clueSR = null;
     [SerializeField] TextMeshPro _text = null;
+    [SerializeField] TextMeshPro _agentDistanceTMP = null;
+    [SerializeField] TextMeshPro _destinationDistanceTMP = null;
 
     [SerializeField] Transform _visualsTransform = null;
     public Transform VisualsTransform => _visualsTransform;
@@ -30,6 +32,9 @@ public class TileHandler : MonoBehaviour
     Tween _colorTween;
     public Vector2Int IndexPos;
     public List<TileHandler> LinkedTiles = new List<TileHandler> ();
+    public List<TileHandler> RandomizedLinkedTiles => GetRandomizeLinkedTiles();
+
+
     public ActorHandler Occupant => GetComponentInChildren<ActorHandler> ();
     [SerializeField] ClueTypes _clueType = ClueTypes.None;
     //[SerializeField] bool _isClueRevealed = false;
@@ -37,6 +42,8 @@ public class TileHandler : MonoBehaviour
     public int TileIndex { get; private set; }
 
     public TileHandler PreviousTile;
+    public int AgentDist;
+    public int DestinationDist;
 
 
     private void Awake()
@@ -51,6 +58,25 @@ public class TileHandler : MonoBehaviour
         ActorController.Instance.PriorityActorTurnCompleting += HandlePriorityActorTurnCompleting;
     }
 
+    private List<TileHandler> GetRandomizeLinkedTiles()
+    {
+        List<TileHandler> newList = new List<TileHandler>(LinkedTiles);
+       System.Random rng = new System.Random();
+
+        int n = newList.Count;
+        while (n > 1)
+        {
+            n--;
+            // Generate a random index between 0 and n inclusive
+            int k = rng.Next(n + 1);
+            // Swap the element at the current position (n) with the element at the random index (k)
+            TileHandler value = newList[k];
+            newList[k] = newList[n];
+            newList[n] = value;
+        }
+
+        return newList;
+    }
 
 
     #region Tile Setup
@@ -317,6 +343,19 @@ public class TileHandler : MonoBehaviour
             _clueSR.enabled = false;
         }
     }
+
+    public void FindAndPublishClosestAgentDistance()
+    {
+        AgentDist = TileController.Instance.GetDistanceToClosestAgent(this);
+        _agentDistanceTMP.text = AgentDist.ToString();
+    }
+
+    public void FindAndPublishDestinationDistance()
+    {
+        DestinationDist = TileController.Instance.GetDistanceToDestination(this);
+        _destinationDistanceTMP.text = DestinationDist.ToString();
+    }
+
 
     #endregion
 

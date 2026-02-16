@@ -19,6 +19,7 @@ public class TileController : MonoBehaviour
 
     //settings
     [SerializeField] int _arenaSize_X = 11;
+    public int ArenaSize_X => _arenaSize_X;
     [SerializeField] int _arenaSize_Y = 9;
     public float ClickTweenTime = 0.75f;
     [SerializeField] float _yFactor = 1.0f;
@@ -249,8 +250,203 @@ public class TileController : MonoBehaviour
 
     #region Pathfinding
 
+    public int GetDistanceToClosestAgent(TileHandler startingTile)
+    {
+        if (startingTile.Occupant && startingTile.Occupant.IsAgent)
+        {
+            return 0;
+        }
 
-    public List<TileHandler> GetShortestPathToDestination(TileHandler startingTile, TileHandler destinationTile, bool isBlockedByAgents)
+        foreach (var tile in _tilesRaw)
+        {
+            tile.PreviousTile = null;
+        }
+
+        Stack<TileHandler> currentCheckPath = new Stack<TileHandler>();
+
+        List<TileHandler> tilesChecked = new List<TileHandler>();
+        Queue<TileHandler> tilesToCheck = new Queue<TileHandler>();
+
+
+        tilesToCheck.Enqueue(startingTile);
+        TileHandler tileBeingChecked = null;
+
+        while (tilesToCheck.Count > 0)
+        {
+
+            tileBeingChecked = tilesToCheck.Dequeue();
+
+            if (tileBeingChecked.Occupant && tileBeingChecked.Occupant.IsAgent)
+            {
+                //Debug.Log("found destination!");
+                break;
+            }
+
+            tilesChecked.Add(tileBeingChecked);
+
+            //if (isBlockedByAgents && tileBeingChecked.Occupant != null && tileBeingChecked.Occupant.IsAgent)
+            if (false == true)
+            {
+                //Debug.Log($"blocked at {tileBeingChecked.TileIndex}");
+
+            }
+            else
+            {
+                foreach (var tile in tileBeingChecked.LinkedTiles)
+                {
+                    if (tilesChecked.Contains(tile) || tilesToCheck.Contains(tile))
+                    {
+
+                    }
+                    //else if (isBlockedByAgents && tile.Occupant != null && tile.Occupant.IsAgent)
+                    else if (false == true)
+                    {
+                        //Debug.Log($"blocked at {tile.TileIndex}");
+                    }
+                    else
+                    {
+                        tilesToCheck.Enqueue(tile);
+                        //Debug.Log($"Enqueueing {tile.TileIndex} (child of {tileBeingChecked.TileIndex})");
+
+                        if (tile.PreviousTile == null)
+                        {
+                            tile.PreviousTile = tileBeingChecked;
+                        }
+
+                    }
+
+                }
+            }
+
+
+            //Debug.Log($"checked {tilesChecked.Count} tiles. {tilesToCheck.Count} in queue.");
+
+
+            if (tilesChecked.Count > 500)
+            {
+                //Debug.Log("Break at 500!");
+                break;
+            }
+        }
+
+        currentCheckPath.Push(tileBeingChecked);
+        TileHandler reverseWalker = null;
+
+        int breaker = 40;
+        while (reverseWalker != startingTile)
+        {
+            reverseWalker = currentCheckPath.Peek().PreviousTile;
+            currentCheckPath.Push(reverseWalker);
+
+            breaker--;
+            if (breaker == 0)
+            {
+                //Debug.Log("path breaker");
+                break;
+            }
+        }
+
+        List<TileHandler> pathAsList = new List<TileHandler>(currentCheckPath);
+
+        return pathAsList.Count - 1;
+    }
+
+    public int GetDistanceToDestination(TileHandler startingTile)
+    {
+
+        if (startingTile == FoxDestinationTile)
+        {
+            return 0;
+        }
+
+        foreach (var tile in _tilesRaw)
+        {
+            tile.PreviousTile = null;
+        }
+
+        Stack<TileHandler> currentCheckPath = new Stack<TileHandler>();
+
+        List<TileHandler> tilesChecked = new List<TileHandler>();
+        Queue<TileHandler> tilesToCheck = new Queue<TileHandler>();
+
+        tilesToCheck.Enqueue(startingTile);
+
+        TileHandler tileBeingChecked = null;
+
+        while (tilesToCheck.Count > 0)
+        {
+
+            tileBeingChecked = tilesToCheck.Dequeue();
+
+            if (tileBeingChecked == FoxDestinationTile)
+            {
+                break;
+            }
+
+            tilesChecked.Add(tileBeingChecked);
+
+            //if (isBlockedByAgents && tileBeingChecked.Occupant != null && tileBeingChecked.Occupant.IsAgent)
+            if (false == true)
+            {
+                //Debug.Log($"blocked at {tileBeingChecked.TileIndex}");
+
+            }
+            else
+            {
+                foreach (var tile in tileBeingChecked.LinkedTiles)
+                {
+                    if (tilesChecked.Contains(tile) || tilesToCheck.Contains(tile))
+                    {
+
+                    }
+                    else
+                    {
+                        tilesToCheck.Enqueue(tile);
+
+                        if (tile.PreviousTile == null)
+                        {
+                            tile.PreviousTile = tileBeingChecked;
+                        }
+
+                    }
+
+                }
+            }
+
+
+            //Debug.Log($"checked {tilesChecked.Count} tiles. {tilesToCheck.Count} in queue.");
+
+
+            if (tilesChecked.Count > 500)
+            {
+                //Debug.Log("Break at 500!");
+                break;
+            }
+        }
+
+        currentCheckPath.Push(tileBeingChecked);
+        TileHandler reverseWalker = null;
+
+        int breaker = 40;
+        while (reverseWalker != startingTile)
+        {
+            reverseWalker = currentCheckPath.Peek().PreviousTile;
+            currentCheckPath.Push(reverseWalker);
+
+            breaker--;
+            if (breaker == 0)
+            {
+                //Debug.Log("path breaker");
+                break;
+            }
+        }
+
+        List<TileHandler> pathAsList = new List<TileHandler>(currentCheckPath);
+
+        return pathAsList.Count - 1;
+    }
+
+    public List<TileHandler> GetShortestPathToDestination(TileHandler startingTile, TileHandler destinationTile)
     {
         foreach (var tile in _tilesRaw)
         {
@@ -279,9 +475,10 @@ public class TileController : MonoBehaviour
 
             tilesChecked.Add(tileBeingChecked);
 
-            if (isBlockedByAgents && tileBeingChecked.Occupant != null && tileBeingChecked.Occupant.IsAgent)
+            //if (isBlockedByAgents && tileBeingChecked.Occupant != null && tileBeingChecked.Occupant.IsAgent)
+            if (false == true)
             {
-                Debug.Log($"blocked at {tileBeingChecked.TileIndex}");
+                //Debug.Log($"blocked at {tileBeingChecked.TileIndex}");
 
             }
             else
@@ -292,14 +489,9 @@ public class TileController : MonoBehaviour
                     {
 
                     }
-                    else if (isBlockedByAgents && tile.Occupant != null && tile.Occupant.IsAgent)
-                    {
-                        Debug.Log($"blocked at {tile.TileIndex}");
-                    }
                     else
                     {
                         tilesToCheck.Enqueue(tile);
-                        Debug.Log($"Enqueueing {tile.TileIndex} (child of {tileBeingChecked.TileIndex})");
 
                         if (tile.PreviousTile == null)
                         {
@@ -487,6 +679,21 @@ public class TileController : MonoBehaviour
         }
     }
 
+    public void FindAllAgentDistances()
+    {
+        foreach (var tile in _tilesRaw)
+        {
+            tile.FindAndPublishClosestAgentDistance();
+        }
+    }
+
+    public void FindAllDestinationDistances()
+    {
+        foreach (var tile in _tilesRaw)
+        {
+            tile.FindAndPublishDestinationDistance();
+        }
+    }
 
     #endregion
 }

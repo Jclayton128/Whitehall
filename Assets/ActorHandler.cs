@@ -267,14 +267,50 @@ public class ActorHandler : MonoBehaviour
         {
             Debug.Log("Fox does his movement...");
 
-            var p = TileController.Instance.GetShortestPathToDestination(CurrentTile, TileController.Instance.FoxDestinationTile, true);
+            TileController.Instance.FindAllDestinationDistances();
+            TileController.Instance.FindAllAgentDistances();
 
-            if (p.Count > 1)
+
+            int rand = UnityEngine.Random.Range(0, TileController.Instance.ArenaSize_X);
+            int currentX = CurrentTile.IndexPos.x;
+
+            TileHandler nextTile = null;
+
+            if (rand > currentX)
             {
-                var newTile = p[1];
-                newTile.SetClue(TileHandler.ClueTypes.Passage);
-                SlideToNewTile(newTile);
+                //prioritize agent avoidance
+                Debug.Log("Prioritizing avoidance");
+                int bestAgentScore = 0;
+                foreach (var tile in CurrentTile.RandomizedLinkedTiles)
+                {
+                    if (tile.AgentDist > bestAgentScore)
+                    {
+                        nextTile = tile;
+                        bestAgentScore = tile.AgentDist;
+                    }
+                }
+
             }
+
+            if (rand <= currentX)
+            {
+                Debug.Log("Prioritizing destination");
+                //prioritize destination approach
+                int bestDestinationScore = int.MaxValue;
+                foreach (var tile in CurrentTile.RandomizedLinkedTiles)
+                {
+                    if (tile.DestinationDist < bestDestinationScore)
+                    {
+                        nextTile = tile;
+                        bestDestinationScore = tile.DestinationDist;
+                    }
+                }
+            }
+
+
+
+            nextTile.SetClue(TileHandler.ClueTypes.Passage);
+            SlideToNewTile(nextTile);
         }
 
     }
