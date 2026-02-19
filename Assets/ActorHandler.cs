@@ -271,42 +271,60 @@ public class ActorHandler : MonoBehaviour
             TileController.Instance.FindAllAgentDistances();
 
 
-            int rand = UnityEngine.Random.Range(0, TileController.Instance.ArenaSize_X);
-            int currentX = CurrentTile.IndexPos.x;
 
+
+            //TileHandler highestAgent = null;
+            //int bestAgentScore = 0;
+            //foreach (var tile in CurrentTile.RandomizedLinkedTiles)
+            //{
+            //    if (tile.AgentDist > bestAgentScore)
+            //    {
+            //        highestAgent = tile;
+            //        bestAgentScore = tile.AgentDist;
+            //    }
+            //}
+
+            //TileHandler lowestDestination = null;
+            //int bestDestinationScore = int.MaxValue;
+            //foreach (var tile in CurrentTile.RandomizedLinkedTiles)
+            //{
+            //    if (tile.DestinationDist < bestDestinationScore)
+            //    {
+            //        lowestDestination = tile;
+            //        bestDestinationScore = tile.DestinationDist;
+            //    }
+            //}
+
+            //TileHandler nextTile = null;
+            //if (lowestDestination.AgentDist <= 1)
+            //{
+            //    nextTile = ;
+            //}
+            //else if ()
+
+            float scoreToBeat = 0;
             TileHandler nextTile = null;
-
-            if (rand > currentX)
+            foreach (var tile in CurrentTile.LinkedTiles)
             {
-                //prioritize agent avoidance
-                Debug.Log("Prioritizing avoidance");
-                int bestAgentScore = 0;
-                foreach (var tile in CurrentTile.RandomizedLinkedTiles)
+                float score = 10 + tile.AgentDist - tile.DestinationDist;
+                Debug.Log($"{tile.TileIndex} scored {score}");
+                if (score > scoreToBeat)
                 {
-                    if (tile.AgentDist > bestAgentScore)
-                    {
-                        nextTile = tile;
-                        bestAgentScore = tile.AgentDist;
-                    }
+                    nextTile = tile;
+                    scoreToBeat = score;
                 }
-
-            }
-
-            if (rand <= currentX)
-            {
-                Debug.Log("Prioritizing destination");
-                //prioritize destination approach
-                int bestDestinationScore = int.MaxValue;
-                foreach (var tile in CurrentTile.RandomizedLinkedTiles)
+                else if (score == scoreToBeat)
                 {
-                    if (tile.DestinationDist < bestDestinationScore)
+                    if (tile.AgentDist > nextTile.AgentDist)
                     {
                         nextTile = tile;
-                        bestDestinationScore = tile.DestinationDist;
+                    }
+                    else
+                    {
+                        //keep nextTile as nextTile if still coequal
                     }
                 }
             }
-
 
 
             nextTile.SetClue(TileHandler.ClueTypes.Passage);
