@@ -51,6 +51,7 @@ public class TileHandler : MonoBehaviour
         _coll = GetComponent<Collider2D>();
         SetClue(ClueTypes.None);
         PreviousTile = null;
+        HideTileValues();
     }
 
     private void Start()
@@ -356,6 +357,19 @@ public class TileHandler : MonoBehaviour
         _destinationDistanceTMP.text = DestinationDist.ToString();
     }
 
+    public void ShowTileValues()
+    {
+        _text.enabled = true;
+         _agentDistanceTMP.enabled = true;
+        _destinationDistanceTMP.enabled = true;
+    }
+
+    public void HideTileValues()
+    {
+        _text.enabled = false;
+        _agentDistanceTMP.enabled = false;
+        _destinationDistanceTMP.enabled = false;
+    }
 
     #endregion
 

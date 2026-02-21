@@ -695,5 +695,22 @@ public class TileController : MonoBehaviour
         }
     }
 
+    public void ShowAllTileValues()
+    {
+        foreach (var tile in _tilesRaw)
+        {
+            tile.ShowTileValues();
+        }
+    }
+
+    public void HideAllTileValues()
+    {
+        {
+            foreach (var tile in _tilesRaw)
+            {
+                tile.HideTileValues();
+            }
+        }
+    }
     #endregion
 }

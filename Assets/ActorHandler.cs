@@ -62,8 +62,19 @@ public class ActorHandler : MonoBehaviour
         if (_abilityQueue[0] == AgentData.AgentAbility.Move && LegalMoves.Contains(clickedTile))
         {
             TileController.Instance.DeHighlightAllTiles();
-            SlideToNewTile(clickedTile);
-            return;
+
+            var pathing = TileController.Instance.GetShortestPathToDestination(CurrentTile, clickedTile);
+            Debug.Log($"{pathing.Count}");
+            if (pathing.Count == 2)
+            {
+                SlideToNewTile(pathing[1]);
+            }
+            else if (pathing.Count == 3)
+            {
+                SlideToNewTileViaSecondTile (pathing[2], pathing[1]);
+            }
+
+                return;
         }
         else if (_abilityQueue[0] == AgentData.AgentAbility.Search && LegalSearches.Contains(clickedTile))
         {
@@ -113,6 +124,17 @@ public class ActorHandler : MonoBehaviour
             ActorController.Instance.MoveTweenTime).OnComplete(CompleteAction);
     }
 
+    private void SlideToNewTileViaSecondTile(TileHandler destinationTile, TileHandler intermediateTile)
+    {
+        _slideTween.Kill();
+
+        transform.DOMove(intermediateTile.transform.position, ActorController.Instance.MoveTweenTime / 2f).SetEase(Ease.Linear);
+
+        transform.parent = destinationTile.VisualsTransform;
+        _slideTween = transform.DOLocalMove(Vector2.zero,
+            ActorController.Instance.MoveTweenTime/2f).SetDelay(ActorController.Instance.MoveTweenTime / 2f).OnComplete(CompleteAction).SetEase(Ease.Linear);
+
+    }
 
     private TileHandler GetCurrentTile()
     {
@@ -307,7 +329,7 @@ public class ActorHandler : MonoBehaviour
             foreach (var tile in CurrentTile.LinkedTiles)
             {
                 float score = 10 + tile.AgentDist - tile.DestinationDist;
-                Debug.Log($"{tile.TileIndex} scored {score}");
+                //Debug.Log($"{tile.TileIndex} scored {score}");
                 if (score > scoreToBeat)
                 {
                     nextTile = tile;

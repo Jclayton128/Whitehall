@@ -15,12 +15,17 @@ public class DebugController : MonoBehaviour
 
             if (_isInDebugMode)
             {
-                ActorController.Instance.Enemy.ShowSprite();
+                TileController.Instance.ShowAllTileValues();
             }
             else
             {
+                TileController.Instance.HideAllTileValues();
                 ActorController.Instance.Enemy.HideSprite();
             }
+        }
+        if (Input.GetKeyUp(KeyCode.Z) && (_isInDebugMode))
+        {
+            ActorController.Instance.Enemy.ShowSprite();
         }
 
         //if (Input.GetKeyUp(KeyCode.Z))
