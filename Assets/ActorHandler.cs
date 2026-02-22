@@ -55,6 +55,12 @@ public class ActorHandler : MonoBehaviour
     {
         if (clickedTile == CurrentTile)
         {
+            if (ActorController.Instance.Enemy.CurrentTile == CurrentTile)
+            {
+                Debug.Log("Victory!");
+                ActorController.Instance.Enemy.ShowSprite();
+            }
+
             CompleteAction();
             return;
         }
@@ -64,7 +70,6 @@ public class ActorHandler : MonoBehaviour
             TileController.Instance.DeHighlightAllTiles();
 
             var pathing = TileController.Instance.GetShortestPathToDestination(CurrentTile, clickedTile);
-            Debug.Log($"{pathing.Count}");
             if (pathing.Count == 2)
             {
                 SlideToNewTile(pathing[1]);

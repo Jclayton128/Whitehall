@@ -133,7 +133,7 @@ public class TileHandler : MonoBehaviour
             TileHandler r2 = quickDeck[2];
 
 
-            if (r0.LinkedTiles.Count <= 2)
+            if (r0.LinkedTiles.Count <= 3)
             {
                 //removing this might reduce too many options for the selected neighbor. do nothing
             }
@@ -144,7 +144,7 @@ public class TileHandler : MonoBehaviour
             }
 
 
-            if (r1.LinkedTiles.Count <= 2)
+            if (r1.LinkedTiles.Count <= 3)
             {
                 //removing this might reduce too many options for the selected neighbor. do nothing
             }
@@ -155,7 +155,7 @@ public class TileHandler : MonoBehaviour
             }
 
 
-            if (r2.LinkedTiles.Count <= 2)
+            if (r2.LinkedTiles.Count <= 3)
             {
                 //removing this might reduce too many options for the selected neighbor. do nothing
             }

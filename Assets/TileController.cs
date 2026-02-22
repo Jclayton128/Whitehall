@@ -119,9 +119,27 @@ public class TileController : MonoBehaviour
 
     private void TrimTilesLogically()
     {
-        foreach (var tile in _tilesRaw)
+        List<TileHandler> randomRaw = new List<TileHandler>(_tilesRaw);
+        Shuffle(randomRaw);
+        foreach (var tile in randomRaw)
         {
             tile.RemoveRandomLinkedTiles();
+        }
+    }
+
+    public static void Shuffle(List<TileHandler> list)
+    {
+        System.Random r = new System.Random();
+        int n = list.Count;
+        while (n > 1)
+        {
+            n--;
+            // Pick a random element from the remaining elements
+            int k = r.Next(n + 1);
+            // Swap the current element with the randomly chosen element
+            TileHandler value = list[k];
+            list[k] = list[n];
+            list[n] = value;
         }
     }
 
