@@ -235,6 +235,12 @@ public class TileController : MonoBehaviour
             {
                 possibleOptions.Add(tile);
             }
+
+            if (tile.IndexPos.y == 0 && !possibleOptions.Contains(tile))
+            {
+                possibleOptions.Add(tile);
+            }
+
         }
 
         int rand = UnityEngine.Random.Range(0, possibleOptions.Count);
@@ -556,7 +562,7 @@ public class TileController : MonoBehaviour
         {
             pathRoute += pathAsList[i].TileIndex + ", ";
         }
-        Debug.Log(pathRoute);
+        //Debug.Log(pathRoute);
         return pathAsList;
     }
 

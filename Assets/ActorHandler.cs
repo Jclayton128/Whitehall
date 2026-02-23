@@ -18,6 +18,9 @@ public class ActorHandler : MonoBehaviour
     [SerializeField] int _moveRange = 1;
     [SerializeField] int _searchRange = 1;
 
+    [SerializeField] AnimationCurve _agentWeighting = null;
+    [SerializeField] AnimationCurve _destinationWeighting = null;
+
     //state
     Tween _slideTween;
     public bool IsAgent => _isAgent;
@@ -29,6 +32,7 @@ public class ActorHandler : MonoBehaviour
     public Sprite ActorSprite => _portraitSR.sprite;
 
     [SerializeField] List<AgentData.AgentAbility> _abilityQueue = new List<AgentData.AgentAbility>();
+    List<TileHandler> _visitedTiles = new List<TileHandler>();
 
     public void SetAgentData(AgentData data, int agentIndex)
     {
@@ -329,12 +333,24 @@ public class ActorHandler : MonoBehaviour
             //}
             //else if ()
 
-            float scoreToBeat = 0;
+            float scoreToBeat = float.NegativeInfinity;
             TileHandler nextTile = null;
             foreach (var tile in CurrentTile.LinkedTiles)
             {
-                float score = 10 + tile.AgentDist - tile.DestinationDist;
-                //Debug.Log($"{tile.TileIndex} scored {score}");
+                float agentFactor = Mathf.InverseLerp(0, 12, tile.AgentDist);
+                float destinationFactor = Mathf.Clamp01(Mathf.InverseLerp(0, 12, tile.DestinationDist));
+
+                //as times goes on, moving to destination begins to be worth more
+                float score = (_agentWeighting.Evaluate(agentFactor)) +
+                    (_destinationWeighting.Evaluate(destinationFactor) * (1 + (0.05f * ActorController.Instance.TurnCount)));
+
+                if (_visitedTiles.Contains(tile)) 
+                {
+                    //As time goes on, doubling-back more penalized.
+                    score -= (0.05f * ActorController.Instance.TurnCount);
+                }
+
+                Debug.Log($"{tile.TileIndex} scored {score}. Agent Factor: {agentFactor} produced {_agentWeighting.Evaluate(agentFactor)}. Dest Factor {destinationFactor} produced {_destinationWeighting.Evaluate(destinationFactor)}");
                 if (score > scoreToBeat)
                 {
                     nextTile = tile;
@@ -356,6 +372,7 @@ public class ActorHandler : MonoBehaviour
 
             nextTile.SetClue(TileHandler.ClueTypes.Passage);
             SlideToNewTile(nextTile);
+            _visitedTiles.Add(nextTile);
         }
 
     }

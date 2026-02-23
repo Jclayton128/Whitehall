@@ -37,6 +37,7 @@ public class ActorController : MonoBehaviour
 
     //state
     int _turns = 0;
+    public int TurnCount => _turns;
     int _priorityIndex = 0;
     [SerializeField] List<ActorHandler> _actorTurnOrder = new List<ActorHandler>();
     public ActorHandler PriorityActor => _actorTurnOrder[_priorityIndex];
