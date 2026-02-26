@@ -74,7 +74,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3292707244480955132, guid: 5b47c928c9d858a4587e1c58488c55a4, type: 3}
       propertyPath: _agentWeighting.m_Curve.Array.data[1].time
-      value: 0.49622777
+      value: 0.39759496
       objectReference: {fileID: 0}
     - target: {fileID: 3292707244480955132, guid: 5b47c928c9d858a4587e1c58488c55a4, type: 3}
       propertyPath: _agentWeighting.m_Curve.Array.data[2].time
@@ -86,7 +86,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3292707244480955132, guid: 5b47c928c9d858a4587e1c58488c55a4, type: 3}
       propertyPath: _agentWeighting.m_Curve.Array.data[1].value
-      value: 0.49745372
+      value: 0.49903682
       objectReference: {fileID: 0}
     - target: {fileID: 3292707244480955132, guid: 5b47c928c9d858a4587e1c58488c55a4, type: 3}
       propertyPath: _agentWeighting.m_Curve.Array.data[2].value

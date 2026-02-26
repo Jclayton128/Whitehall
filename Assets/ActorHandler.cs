@@ -342,15 +342,19 @@ public class ActorHandler : MonoBehaviour
 
                 //as times goes on, moving to destination begins to be worth more
                 float score = (_agentWeighting.Evaluate(agentFactor)) +
-                    (_destinationWeighting.Evaluate(destinationFactor) * (1 + (0.05f * ActorController.Instance.TurnCount)));
+                    (_destinationWeighting.Evaluate(destinationFactor) * (1 + (0.1f * ActorController.Instance.TurnCount)));
 
                 if (_visitedTiles.Contains(tile)) 
                 {
                     //As time goes on, doubling-back more penalized.
-                    score -= (0.05f * ActorController.Instance.TurnCount);
+                    score -= (0.02f * ActorController.Instance.TurnCount);
                 }
 
-                Debug.Log($"{tile.TileIndex} scored {score}. Agent Factor: {agentFactor} produced {_agentWeighting.Evaluate(agentFactor)}. Dest Factor {destinationFactor} produced {_destinationWeighting.Evaluate(destinationFactor)}");
+                float randomFuzz = UnityEngine.Random.Range(-.1f, .1f);
+
+                score += randomFuzz;
+
+                Debug.Log($"{tile.TileIndex} scored {score}. Fuzz: {randomFuzz}. Agent Factor: {agentFactor} produced {_agentWeighting.Evaluate(agentFactor)}. Dest Factor {destinationFactor} produced {_destinationWeighting.Evaluate(destinationFactor) * (1 + (0.05f * ActorController.Instance.TurnCount))}");
                 if (score > scoreToBeat)
                 {
                     nextTile = tile;
