@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6422723730568940183}
   - component: {fileID: 1371911720516966212}
   m_Layer: 5
-  m_Name: TurnCountTMP
+  m_Name: TMP
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

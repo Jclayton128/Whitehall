@@ -15,7 +15,7 @@ public class ActorController : MonoBehaviour
 
     //settings
 
-    [SerializeField] TextMeshProUGUI _turnCountTMP = null;
+
 
     [SerializeField] PortraitDriver[] _turnorderPortraits = null;
 
@@ -36,8 +36,7 @@ public class ActorController : MonoBehaviour
     public float MoveTweenTime = 0.75f;
 
     //state
-    int _turns = 0;
-    public int TurnCount => _turns;
+
     int _priorityIndex = 0;
     [SerializeField] List<ActorHandler> _actorTurnOrder = new List<ActorHandler>();
     public ActorHandler PriorityActor => _actorTurnOrder[_priorityIndex];
@@ -47,6 +46,22 @@ public class ActorController : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+    }
+
+    public void ClearActors()
+    {
+        if (_actorTurnOrder.Count > 0)
+        {
+            for (int i = _actorTurnOrder.Count - 1; i >= 0; i--)
+            {
+                Destroy(_actorTurnOrder[i].gameObject);
+            }
+
+            _actorTurnOrder.Clear();
+            _priorityIndex = 0;
+            Enemy = null;
+
+        }
     }
 
     public void SpawnActors()
@@ -66,8 +81,7 @@ public class ActorController : MonoBehaviour
         _turnorderPortraits[_priorityIndex].EnlargePortrait();
         PriorityActor.BeginTurn();
 
-        _turns = 1;
-        _turnCountTMP.text = _turns.ToString();
+
     }
 
     private void SpawnAgent(int index)
@@ -117,8 +131,7 @@ public class ActorController : MonoBehaviour
         if (_priorityIndex >= _actorTurnOrder.Count)
         {
             _priorityIndex = 0;
-            _turns ++;
-            _turnCountTMP.text = _turns.ToString();
+            GameController.Instance.AdvanceTurn();
         }
 
         _turnorderPortraits[_priorityIndex].EnlargePortrait();

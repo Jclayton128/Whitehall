@@ -24,4 +24,9 @@ public class TileLinkageHandler : MonoBehaviour
 
         _cantorIndex = cantorIndex;
     }
+
+    public void RemoveTileLinkage()
+    {
+        Destroy(gameObject);
+    }
 }

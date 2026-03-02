@@ -4,8 +4,16 @@ using UnityEngine;
 
 public class DebugController : MonoBehaviour
 {
+    public static DebugController Instance {  get; private set; }
+
     //state
     bool _isInDebugMode = false;
+    public bool IsInDebugMode => _isInDebugMode;
+
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     private void Update()
     {

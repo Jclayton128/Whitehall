@@ -46,7 +46,7 @@ public class TileController : MonoBehaviour
 
     TileHandler _tileUnderCursor;
     Dictionary<int, TileLinkageHandler> _cantorIndexDictionary = new Dictionary<int, TileLinkageHandler>();
-    public TileHandler FoxDestinationTile;
+    public TileHandler FoxDestinationTile { get; private set; }
 
     #region Arena Setup
 
@@ -59,6 +59,9 @@ public class TileController : MonoBehaviour
 
     public void BuildNewArena()
     {
+        _tileHolder.transform.position = Vector2.zero;
+        RemoveAllTiles();
+
         ConstructArena();
         LinkTilesLogically();
 
@@ -70,12 +73,36 @@ public class TileController : MonoBehaviour
 
         RecenterTiles();
     }
+    private void RemoveAllTiles()
+    {
+        if (_tilesRaw.Count > 0)
+        {
+            for (int i = _tilesRaw.Count - 1; i >= 0; i--)
+            {
+                _tilesRaw[i].RemoveTile();
+            }
+            
+            List<int> keys = _cantorIndexDictionary.Keys.ToList();
 
+            foreach (var key in keys)
+            {
+                _cantorIndexDictionary[key].RemoveTileLinkage();
+            }
+
+
+            _tilesRaw.Clear();
+            _tilesLocation.Clear();
+            _tileUnderCursor = null;
+            _cantorIndexDictionary.Clear();
+            FoxDestinationTile = null;
+        }
+
+    }
 
 
     private void ConstructArena()
     {
-        RemoveAllTiles();
+
 
         Vector2 walker = Vector2.zero;
 
@@ -254,18 +281,7 @@ public class TileController : MonoBehaviour
         _tileHolder.transform.position = newPos;
     }
 
-    private void RemoveAllTiles()
-    {
-        if (_tilesRaw.Count > 0)
-        {
-            for (int i = _tilesRaw.Count - 1; i >= 0; i--)
-            {
-                _tilesRaw[i].RemoveTile();
-            }
-            _tilesRaw.Clear();
-        }
 
-    }
 
 
 
@@ -659,9 +675,10 @@ public class TileController : MonoBehaviour
 
     public void HandleTileClick_LMB()
     {
+        if (GameController.Instance.GameState == GameController.GameStates.OutOfRun) return;
         if (_tileUnderCursor == null) return;
 
-        ActorController.Instance.PriorityActor.ExecuteClickViaCurrentAction(_tileUnderCursor);
+        ActorController.Instance.PriorityActor.ExecuteLMBClickViaCurrentAction(_tileUnderCursor);
 
         //if (ActorController.Instance.PriorityActor.LegalMoves.Contains(_tileUnderCursor) ||
         //    ActorController.Instance.PriorityActor.CurrentTile == _tileUnderCursor)
@@ -671,6 +688,13 @@ public class TileController : MonoBehaviour
         //    //ActorController.Instance.PriorityActor.SlideToNewTile(_tileUnderCursor);
         //}
     }
+    public void HandleTileClick_RMB()
+    {
+        if (GameController.Instance.GameState == GameController.GameStates.OutOfRun) return;
+        if (_tileUnderCursor == null) return;
+
+        ActorController.Instance.PriorityActor.ExecuteRMBClickViaCurrentAction(_tileUnderCursor);
+    }
 
     public bool SearchForClue(TileHandler searchedLocation)
     {
@@ -678,16 +702,7 @@ public class TileController : MonoBehaviour
         return foundClue;
     }
 
-    public void HandleTileClick_RMB()
-    {
-        if (_tileUnderCursor == null) return;
 
-        if (ActorController.Instance.PriorityActor.LegalMoves.Contains(_tileUnderCursor))
-        {
-            //arrest via RMB?
-
-        }
-    }
 
 
 

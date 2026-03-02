@@ -1,9 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using DG.Tweening;
-using System;
+using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.Tilemaps;
 
 
 public class ActorHandler : MonoBehaviour
@@ -33,6 +34,7 @@ public class ActorHandler : MonoBehaviour
 
     [SerializeField] List<AgentData.AgentAbility> _abilityQueue = new List<AgentData.AgentAbility>();
     List<TileHandler> _visitedTiles = new List<TileHandler>();
+    bool _hasSearchedForCluesThisTurn = false;
 
     public void SetAgentData(AgentData data, int agentIndex)
     {
@@ -55,15 +57,15 @@ public class ActorHandler : MonoBehaviour
         SetAgentData(_agentData, 0);
     }
 
-    public void ExecuteClickViaCurrentAction(TileHandler clickedTile)
+    public void ExecuteLMBClickViaCurrentAction(TileHandler clickedTile)
     {
         if (clickedTile == CurrentTile)
         {
-            if (ActorController.Instance.Enemy.CurrentTile == CurrentTile)
-            {
-                Debug.Log("Victory!");
-                ActorController.Instance.Enemy.ShowSprite();
-            }
+            //if (ActorController.Instance.Enemy.CurrentTile == CurrentTile)
+            //{
+            //    Debug.Log("Victory!");
+            //    ActorController.Instance.Enemy.ShowSprite();
+            //}
 
             CompleteAction();
             return;
@@ -87,6 +89,7 @@ public class ActorHandler : MonoBehaviour
         }
         else if (_abilityQueue[0] == AgentData.AgentAbility.Search && LegalSearches.Contains(clickedTile))
         {
+            _hasSearchedForCluesThisTurn = true;
             bool foundClue = TileController.Instance.SearchForClue(clickedTile);
             if (foundClue)
             {
@@ -94,6 +97,37 @@ public class ActorHandler : MonoBehaviour
             }
             return;
         }
+    }
+
+    public void ExecuteRMBClickViaCurrentAction(TileHandler clickedTile)
+    {
+        if (!LegalSearches.Contains(clickedTile))
+        {
+            //can't arrest in places you can't search
+            //do nothing
+            return;
+        }
+
+        if (_hasSearchedForCluesThisTurn)
+        {
+            //can't arrest on the same turn that you've searched for clues
+            return;
+        }
+
+        if (ActorController.Instance.Enemy.CurrentTile == clickedTile)
+        {
+            Debug.Log("Attempting arrest: Found the fox!");
+            ActorController.Instance.Enemy.ShowSprite();
+            GameController.Instance.EndRun_Victory_Arrest();
+        }
+        else
+        {
+            Debug.Log("Attempting arrest: nothing...");
+        }
+
+        CompleteTurn();
+        return;
+        
     }
 
     private void CompleteAction()
@@ -283,19 +317,30 @@ public class ActorHandler : MonoBehaviour
 
     public void BeginTurn()
     {
-        if (CurrentTile == TileController.Instance.FoxDestinationTile)
-        {
-            Debug.Log("Fox wins!");
-        }
-
         _abilityQueue = new List<AgentData.AgentAbility>(_agentData.AgentAbilities);
         TileController.Instance.DeHighlightAllTiles();
         if (_isAgent)
         {
             HighlightPossibleOptions();
+            _hasSearchedForCluesThisTurn = false;
         }
         else
         {
+            if (CurrentTile == TileController.Instance.FoxDestinationTile)
+            {
+                GameController.Instance.EndRun_Defeat();
+                Debug.Log("Fox wins!");
+                return;
+            }
+
+            else if (GameController.Instance.RemainingTurns <= 0)
+            {
+                GameController.Instance.EndRun_Victory_Arrest();
+                Debug.Log("Agents win via time!");
+                return;
+            }
+
+
             Debug.Log("Fox does his movement...");
 
             TileController.Instance.FindAllDestinationDistances();
@@ -337,24 +382,23 @@ public class ActorHandler : MonoBehaviour
             TileHandler nextTile = null;
             foreach (var tile in CurrentTile.LinkedTiles)
             {
-                float agentFactor = Mathf.InverseLerp(0, 12, tile.AgentDist);
-                float destinationFactor = Mathf.Clamp01(Mathf.InverseLerp(0, 12, tile.DestinationDist));
+                
+
 
                 //as times goes on, moving to destination begins to be worth more
-                float score = (_agentWeighting.Evaluate(agentFactor)) +
-                    (_destinationWeighting.Evaluate(destinationFactor) * (1 + (0.1f * ActorController.Instance.TurnCount)));
+                float score = GenerateAgentScore(tile.AgentDist) + GenerateDestinationScore(tile.DestinationDist);
 
                 if (_visitedTiles.Contains(tile)) 
                 {
                     //As time goes on, doubling-back more penalized.
-                    score -= (0.02f * ActorController.Instance.TurnCount);
+                    score -= (0.02f * GameController.Instance.TurnCount);
                 }
 
                 float randomFuzz = UnityEngine.Random.Range(-.1f, .1f);
 
                 score += randomFuzz;
 
-                Debug.Log($"{tile.TileIndex} scored {score}. Fuzz: {randomFuzz}. Agent Factor: {agentFactor} produced {_agentWeighting.Evaluate(agentFactor)}. Dest Factor {destinationFactor} produced {_destinationWeighting.Evaluate(destinationFactor) * (1 + (0.05f * ActorController.Instance.TurnCount))}");
+                Debug.Log($"{tile.TileIndex} scored {score}. Fuzz: {randomFuzz}. Agent Score: {GenerateAgentScore(tile.AgentDist)}. Dest Score: {GenerateDestinationScore(tile.DestinationDist)}");
                 if (score > scoreToBeat)
                 {
                     nextTile = tile;
@@ -379,6 +423,29 @@ public class ActorHandler : MonoBehaviour
             _visitedTiles.Add(nextTile);
         }
 
+    }
+
+    private float GenerateDestinationScore(int destinationDistance)
+    {
+        float destinationFactor = Mathf.Clamp01(Mathf.InverseLerp(0, 12, destinationDistance));
+
+        float destScore;
+
+        if (destinationDistance < GameController.Instance.RemainingTurns - 1)
+        {
+            destScore = (_destinationWeighting.Evaluate(destinationFactor) * (1 + (0.1f * GameController.Instance.TurnCount)));
+        }
+        else
+        {
+            destScore = _destinationWeighting.Evaluate(destinationFactor) * 10;
+        }
+            return destScore;
+    }
+
+    private float GenerateAgentScore(int agentDistance)
+    {
+        float agentFactor = Mathf.InverseLerp(0, 12, agentDistance);
+        return _agentWeighting.Evaluate(agentFactor);
     }
 
     public void CompleteTurn()

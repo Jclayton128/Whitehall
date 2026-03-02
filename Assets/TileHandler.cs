@@ -375,7 +375,8 @@ public class TileHandler : MonoBehaviour
 
     public void RemoveTile()
     {
-        Debug.LogWarning("not implemented");
+        //Debug.LogWarning("not implemented");
+        Destroy(gameObject);
     }
    
 
