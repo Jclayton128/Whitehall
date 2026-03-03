@@ -35,21 +35,26 @@ public class GameController : MonoBehaviour
     public void StartRun()
     {
         _gameEndPanel.SetActive(false);
+        GameState = GameStates.InRun;
 
         TileController.Instance.BuildNewArena();
         ActorController.Instance.ClearActors();
         ActorController.Instance.SpawnActors();
+        ReplayController.Instance.ResetReplayQueue();
+
+        ActorController.Instance.StartPriorityActor();
 
         _turns = 1;
         _turnCountTMP.text = $"{_turns} / {_maxTurns}";
-        GameState = GameStates.InRun;
+
     }
 
     public void EndRun_Defeat()
     {
         _gameEndPanel.SetActive(true);
-        _gameEndTMP.text = "Defeat";
+        _gameEndTMP.text = "Defeat - the fox got away!";
         GameState = GameStates.OutOfRun;
+        ReplayController.Instance.BeginPlayback();
     }
 
     public void EndRun_Victory_Arrest()
@@ -57,12 +62,21 @@ public class GameController : MonoBehaviour
         _gameEndPanel.SetActive(true);
         _gameEndTMP.text = "Victory - you found the fox!";
         GameState = GameStates.OutOfRun;
+        ReplayController.Instance.BeginPlayback();
     }
 
     public void EndRun_Victory_Time()
     {
         _gameEndPanel.SetActive(true);
         _gameEndTMP.text = "Victory - the fox ran out of time!";
+        GameState = GameStates.OutOfRun;
+        ReplayController.Instance.BeginPlayback();
+    }
+
+    public void EndRun_Neither()
+    {
+        _gameEndPanel.SetActive(true);
+        _gameEndTMP.text = "FOXHUNT";
         GameState = GameStates.OutOfRun;
     }
 

@@ -36,10 +36,15 @@ public class ActorHandler : MonoBehaviour
     List<TileHandler> _visitedTiles = new List<TileHandler>();
     bool _hasSearchedForCluesThisTurn = false;
 
+    [SerializeField] TileHandler _startingTile;
+    public TileHandler StartingTile => _startingTile;
+
     public void SetAgentData(AgentData data, int agentIndex)
     {
         _agentData = data;
         _portraitSR.sprite = data.AgentSprite;
+
+        //ReplayController.Instance.AddStep(new ReplayStep(this, ReplayStep.StepTypes.Start, CurrentTile));
 
         if (_isAgent)
         {
@@ -49,6 +54,8 @@ public class ActorHandler : MonoBehaviour
         {
             HideSprite();
         }
+
+        _startingTile = GetCurrentTile();
 
     }
 
@@ -61,11 +68,6 @@ public class ActorHandler : MonoBehaviour
     {
         if (clickedTile == CurrentTile)
         {
-            //if (ActorController.Instance.Enemy.CurrentTile == CurrentTile)
-            //{
-            //    Debug.Log("Victory!");
-            //    ActorController.Instance.Enemy.ShowSprite();
-            //}
 
             CompleteAction();
             return;
@@ -161,21 +163,48 @@ public class ActorHandler : MonoBehaviour
     private void SlideToNewTile(TileHandler newTile)
     {
         _slideTween.Kill();
+        ReplayController.Instance.AddStep(new ReplayStep(this, ReplayStep.StepTypes.Move, CurrentTile, newTile));
 
         transform.parent = newTile.VisualsTransform;
         _slideTween = transform.DOLocalMove(Vector2.zero,
             ActorController.Instance.MoveTweenTime).OnComplete(CompleteAction);
+
+        
     }
 
     private void SlideToNewTileViaSecondTile(TileHandler destinationTile, TileHandler intermediateTile)
     {
         _slideTween.Kill();
 
+        ReplayController.Instance.AddStep(new ReplayStep(this, ReplayStep.StepTypes.Move, CurrentTile, intermediateTile));
+        ReplayController.Instance.AddStep(new ReplayStep(this, ReplayStep.StepTypes.Move, intermediateTile, destinationTile));
+
         transform.DOMove(intermediateTile.transform.position, ActorController.Instance.MoveTweenTime / 2f).SetEase(Ease.Linear);
 
         transform.parent = destinationTile.VisualsTransform;
         _slideTween = transform.DOLocalMove(Vector2.zero,
             ActorController.Instance.MoveTweenTime/2f).SetDelay(ActorController.Instance.MoveTweenTime / 2f).OnComplete(CompleteAction).SetEase(Ease.Linear);
+
+        
+    }
+
+    public void SlideToNewTile(TileHandler newTile, float time)
+    {
+        _slideTween.Kill();
+
+        transform.parent = newTile.VisualsTransform;
+        _slideTween = transform.DOLocalMove(Vector2.zero, time);
+    }
+
+    public void SlideToNewTileViaSecondTile(TileHandler destinationTile, TileHandler intermediateTile, float time)
+    {
+        _slideTween.Kill();
+
+        transform.DOMove(intermediateTile.transform.position, time / 2f).SetEase(Ease.Linear);
+
+        transform.parent = destinationTile.VisualsTransform;
+        _slideTween = transform.DOLocalMove(Vector2.zero,
+            time / 2f).SetDelay(time / 2f).SetEase(Ease.Linear);
 
     }
 
@@ -317,6 +346,7 @@ public class ActorHandler : MonoBehaviour
 
     public void BeginTurn()
     {
+        if (GameController.Instance.GameState == GameController.GameStates.OutOfRun) return;
         _abilityQueue = new List<AgentData.AgentAbility>(_agentData.AgentAbilities);
         TileController.Instance.DeHighlightAllTiles();
         if (_isAgent)
@@ -397,8 +427,12 @@ public class ActorHandler : MonoBehaviour
                 float randomFuzz = UnityEngine.Random.Range(-.1f, .1f);
 
                 score += randomFuzz;
-
-                Debug.Log($"{tile.TileIndex} scored {score}. Fuzz: {randomFuzz}. Agent Score: {GenerateAgentScore(tile.AgentDist)}. Dest Score: {GenerateDestinationScore(tile.DestinationDist)}");
+                
+                if (DebugController.Instance && DebugController.Instance.IsInDebugMode)
+                {
+                    Debug.Log($"{tile.TileIndex} scored {score}. Fuzz: {randomFuzz}. Agent Score: {GenerateAgentScore(tile.AgentDist)}. Dest Score: {GenerateDestinationScore(tile.DestinationDist)}");
+                }
+                
                 if (score > scoreToBeat)
                 {
                     nextTile = tile;

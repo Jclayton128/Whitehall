@@ -22,9 +22,12 @@ public class PortraitDriver : MonoBehaviour
 
     //state
     int _abilityCount = 0;
+    ActorHandler _linkedActor;
+    public ActorHandler LinkedActor => _linkedActor;
 
-    public void SetPortrait(AgentData agentData)
+    public void SetPortrait(AgentData agentData, ActorHandler linkedActor)
     {
+        _linkedActor = linkedActor;
         _agentPortrait.sprite = agentData.AgentSprite;
         _agentPortrait.GetComponent<RectTransform>().localScale = _smallScale;
 

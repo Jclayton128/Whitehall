@@ -35,6 +35,12 @@ public class DebugController : MonoBehaviour
         {
             ActorController.Instance.Enemy.ShowSprite();
         }
+        if (Input.GetKeyUp(KeyCode.R) && (_isInDebugMode))
+        {
+            TileController.Instance.HideAllTileValues();
+            ActorController.Instance.Enemy.ShowSprite();
+            ReplayController.Instance.BeginPlayback();
+        }
 
         //if (Input.GetKeyUp(KeyCode.Z))
         //{

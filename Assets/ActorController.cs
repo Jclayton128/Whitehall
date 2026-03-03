@@ -40,7 +40,7 @@ public class ActorController : MonoBehaviour
     int _priorityIndex = 0;
     [SerializeField] List<ActorHandler> _actorTurnOrder = new List<ActorHandler>();
     public ActorHandler PriorityActor => _actorTurnOrder[_priorityIndex];
-
+    public List<ActorHandler> ActorList => _actorTurnOrder;
     public ActorHandler Enemy { get; private set; }
 
     private void Awake()
@@ -74,14 +74,16 @@ public class ActorController : MonoBehaviour
 
         for (int i = 0; i  < _actorTurnOrder.Count; i++)
         {
-            _turnorderPortraits[i].SetPortrait(_actorTurnOrder[i].AgentData);
+            _turnorderPortraits[i].SetPortrait(_actorTurnOrder[i].AgentData, _actorTurnOrder[i]);
         }
 
         _priorityIndex = 0;
         _turnorderPortraits[_priorityIndex].EnlargePortrait();
+    }
+
+    public void StartPriorityActor()
+    {
         PriorityActor.BeginTurn();
-
-
     }
 
     private void SpawnAgent(int index)
@@ -136,6 +138,22 @@ public class ActorController : MonoBehaviour
 
         _turnorderPortraits[_priorityIndex].EnlargePortrait();
         PriorityActor.BeginTurn();
+    }
+
+    public void EnlargeActorPortait(ActorHandler actor)
+    {
+
+        foreach (var portrait in _turnorderPortraits)
+        {
+            if (portrait.LinkedActor == actor)
+            {
+                portrait.EnlargePortrait();
+            }
+            else
+            {
+                portrait.ShrinkPortrait();
+            }
+        }
     }
 
     #endregion
