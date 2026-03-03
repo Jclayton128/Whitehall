@@ -46,7 +46,9 @@ public class TileController : MonoBehaviour
 
     TileHandler _tileUnderCursor;
     Dictionary<int, TileLinkageHandler> _cantorIndexDictionary = new Dictionary<int, TileLinkageHandler>();
-    public TileHandler FoxDestinationTile { get; private set; }
+
+    public TileHandler EnemyStartTile { get; private set; }
+    public TileHandler EnemyDestinationTile { get; private set; }
 
     #region Arena Setup
 
@@ -69,10 +71,9 @@ public class TileController : MonoBehaviour
 
         LinkTilesGraphically();
 
-        SetFoxDestinationTile();
-
         RecenterTiles();
     }
+
     private void RemoveAllTiles()
     {
         if (_tilesRaw.Count > 0)
@@ -94,7 +95,7 @@ public class TileController : MonoBehaviour
             _tilesLocation.Clear();
             _tileUnderCursor = null;
             _cantorIndexDictionary.Clear();
-            FoxDestinationTile = null;
+            EnemyDestinationTile = null;
         }
 
     }
@@ -250,7 +251,19 @@ public class TileController : MonoBehaviour
 
         return neighboringTiles;
     }
-    private void SetFoxDestinationTile()
+
+    public void SetActorSpecificTiles()
+    {
+        SetEnemyStartTile();
+        SetEnemyDestinationTile();
+    }
+
+    private void SetEnemyStartTile()
+    {
+        EnemyStartTile = ActorController.Instance.Enemy.CurrentTile;
+        EnemyStartTile.SetClue(TileHandler.ClueTypes.Origin);
+    }
+    private void SetEnemyDestinationTile()
     {
         //get an edge or next-to-edge tile
 
@@ -271,7 +284,7 @@ public class TileController : MonoBehaviour
         }
 
         int rand = UnityEngine.Random.Range(0, possibleOptions.Count);
-        FoxDestinationTile = possibleOptions[rand];
+        EnemyDestinationTile = possibleOptions[rand];
     }
     private void RecenterTiles()
     {
@@ -394,7 +407,7 @@ public class TileController : MonoBehaviour
     public int GetDistanceToDestination(TileHandler startingTile)
     {
 
-        if (startingTile == FoxDestinationTile)
+        if (startingTile == EnemyDestinationTile)
         {
             return 0;
         }
@@ -418,7 +431,7 @@ public class TileController : MonoBehaviour
 
             tileBeingChecked = tilesToCheck.Dequeue();
 
-            if (tileBeingChecked == FoxDestinationTile)
+            if (tileBeingChecked == EnemyDestinationTile)
             {
                 break;
             }
@@ -715,6 +728,25 @@ public class TileController : MonoBehaviour
         foreach (var tile in _tilesRaw)
         {
             tile.ColorTileToAbility(AgentData.AgentAbility.None);
+        }
+    }
+
+    public void ClearClueStateFromAllTiles()
+    {
+        foreach (var tile in _tilesRaw)
+        {
+            tile.SetClue(TileHandler.ClueTypes.None);
+        }
+    }
+
+    public void ClearJustSearchedClueFromAllTiles()
+    {
+        foreach (var tile in _tilesRaw)
+        {
+            if (tile.ClueType == TileHandler.ClueTypes.JustSearched)
+            {
+                tile.SetClue(TileHandler.ClueTypes.None);
+            }
         }
     }
 

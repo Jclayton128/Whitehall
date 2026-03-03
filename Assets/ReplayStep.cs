@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class ReplayStep
 {
-    public enum StepTypes { Undefined, Move, Search, Arrest}
+    public enum StepTypes { Undefined, Move, Search, Arrest, TurnCountIncrement}
 
 
     //state
@@ -17,12 +17,14 @@ public class ReplayStep
     public TileHandler TargetLocation => _targetLocation;
     TileHandler _startingTile = null;
     public TileHandler StartingTile => _startingTile;
+    int _payloadInt;
+    public int PayloadInt => _payloadInt;
 
-    public ReplayStep (ActorHandler actor, StepTypes stepType, TileHandler startingTile, TileHandler targetLocation)
+    public ReplayStep (ActorHandler actor, StepTypes stepType, TileHandler targetLocation, int payloadInt)
     {
         _actor = actor;
         _stepType = stepType;
-        _startingTile = startingTile;
         _targetLocation = targetLocation;
+        _payloadInt = payloadInt;
     }
 }

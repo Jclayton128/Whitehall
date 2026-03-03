@@ -37,6 +37,7 @@ public class TileHandler : MonoBehaviour
 
     public ActorHandler Occupant => GetComponentInChildren<ActorHandler> ();
     [SerializeField] ClueTypes _clueType = ClueTypes.None;
+    public ClueTypes ClueType => _clueType;
     //[SerializeField] bool _isClueRevealed = false;
     Color _previousTileColor;
     public int TileIndex { get; private set; }

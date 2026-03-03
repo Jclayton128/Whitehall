@@ -99,7 +99,7 @@ public class ActorController : MonoBehaviour
     {
         var startTile = TileController.Instance.GetTileAtVec2Int(_enemyStartingSpot);
         var actor = Instantiate(_enemyPrefab, startTile.VisualsTransform);
-        startTile.SetClue(TileHandler.ClueTypes.Origin);
+
         actor.SetDefaultAgentData();
         AddActorToStartOfTurnOrder(actor);
         Enemy = actor;

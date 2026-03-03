@@ -36,7 +36,12 @@ public class ReplayController : MonoBehaviour
     public void BeginPlayback()
     {
         TileController.Instance.DeHighlightAllTiles();
-        TileController.Instance.FoxDestinationTile.SetClue(TileHandler.ClueTypes.Origin);
+        TileController.Instance.ClearClueStateFromAllTiles();
+
+        TileController.Instance.EnemyStartTile.SetClue(TileHandler.ClueTypes.Origin);
+        TileController.Instance.EnemyDestinationTile.SetClue(TileHandler.ClueTypes.Origin);
+
+        GameController.Instance.SetTurnIndication(1);
 
         if (_masterStepList.Count > 0)
         {
@@ -60,6 +65,12 @@ public class ReplayController : MonoBehaviour
         {
             ReplayStep currentStep = _workingStepQueue.Dequeue();
 
+            if (currentStep.Actor == ActorController.Instance.Enemy)
+            {
+                //When the fox is back up, clear out all the Just Searched clues from the 3 agents' turns
+                TileController.Instance.ClearJustSearchedClueFromAllTiles();
+            }
+
             ActorController.Instance.EnlargeActorPortait(currentStep.Actor);
 
             switch (currentStep.StepType)
@@ -68,30 +79,22 @@ public class ReplayController : MonoBehaviour
                     Debug.Log("Step type undefined");
                     break;
 
-                //case ReplayStep.StepTypes.Start:
-                //    //teleport to target location
-                //    Debug.Log("Step type start");
-                //    currentStep.Actor.transform.parent = currentStep.TargetLocation.VisualsTransform;
-                //    currentStep.Actor.transform.localPosition = Vector2.zero;
-
-                //    break;
-
-
                 case ReplayStep.StepTypes.Move:
                     //slide to target location
-                    Debug.Log($"{currentStep.Actor.name} moving", currentStep.Actor);
-                    //currentStep.Actor.transform.parent = null;
-                    //currentStep.Actor.transform.position = currentStep.StartingTile.transform.position;
-                    currentStep.Actor.SlideToNewTile(currentStep.TargetLocation, _stepTweenTime);
+                    currentStep.Actor.SlideToNewTile_Replay(currentStep.TargetLocation, _stepTweenTime);
                     break;
 
 
                 case ReplayStep.StepTypes.Search:
-                    Debug.Log("Step type undefined");
+                    TileController.Instance.SearchForClue(currentStep.TargetLocation);
                     break;
 
                 case ReplayStep.StepTypes.Arrest:
                     Debug.Log("Step type undefined");
+                    break;
+
+                case ReplayStep.StepTypes.TurnCountIncrement:
+                    GameController.Instance.SetTurnIndication(currentStep.PayloadInt);
                     break;
 
             }

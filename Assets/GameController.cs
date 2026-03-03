@@ -17,6 +17,7 @@ public class GameController : MonoBehaviour
     //settings
 
     [SerializeField] int _maxTurns = 15;
+    public int MaxTurns => _maxTurns;
 
 
     //state
@@ -40,6 +41,8 @@ public class GameController : MonoBehaviour
         TileController.Instance.BuildNewArena();
         ActorController.Instance.ClearActors();
         ActorController.Instance.SpawnActors();
+        TileController.Instance.SetActorSpecificTiles();
+
         ReplayController.Instance.ResetReplayQueue();
 
         ActorController.Instance.StartPriorityActor();
@@ -83,6 +86,12 @@ public class GameController : MonoBehaviour
     public void AdvanceTurn()
     {
         _turns++;
-        _turnCountTMP.text = $"{_turns} / {_maxTurns}";
+        SetTurnIndication(_turns);
+        ReplayController.Instance.AddStep(new ReplayStep(null, ReplayStep.StepTypes.TurnCountIncrement, null, _turns));
+    }
+
+    public void SetTurnIndication(int turnToDisplay)
+    {
+        _turnCountTMP.text = $"{turnToDisplay} / {_maxTurns}";
     }
 }

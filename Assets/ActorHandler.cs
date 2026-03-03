@@ -93,6 +93,9 @@ public class ActorHandler : MonoBehaviour
         {
             _hasSearchedForCluesThisTurn = true;
             bool foundClue = TileController.Instance.SearchForClue(clickedTile);
+
+            ReplayController.Instance.AddStep(new ReplayStep(this, ReplayStep.StepTypes.Search, clickedTile, 0));
+
             if (foundClue)
             {
                 CompleteAction();
@@ -160,24 +163,41 @@ public class ActorHandler : MonoBehaviour
 
     }
 
+
     private void SlideToNewTile(TileHandler newTile)
     {
         _slideTween.Kill();
-        ReplayController.Instance.AddStep(new ReplayStep(this, ReplayStep.StepTypes.Move, CurrentTile, newTile));
+        ReplayController.Instance.AddStep(new ReplayStep(this, ReplayStep.StepTypes.Move, newTile, 0));
 
         transform.parent = newTile.VisualsTransform;
         _slideTween = transform.DOLocalMove(Vector2.zero,
             ActorController.Instance.MoveTweenTime).OnComplete(CompleteAction);
 
-        
+        if (!_isAgent)
+        {
+            newTile.SetClue(TileHandler.ClueTypes.Passage);
+        }
+    }
+
+    public void SlideToNewTile_Replay(TileHandler newTile, float time)
+    {
+        _slideTween.Kill();
+
+        transform.parent = newTile.VisualsTransform;
+        _slideTween = transform.DOLocalMove(Vector2.zero, time);
+
+        if (!_isAgent)
+        {
+            newTile.SetClue(TileHandler.ClueTypes.Passage);
+        }
     }
 
     private void SlideToNewTileViaSecondTile(TileHandler destinationTile, TileHandler intermediateTile)
     {
         _slideTween.Kill();
 
-        ReplayController.Instance.AddStep(new ReplayStep(this, ReplayStep.StepTypes.Move, CurrentTile, intermediateTile));
-        ReplayController.Instance.AddStep(new ReplayStep(this, ReplayStep.StepTypes.Move, intermediateTile, destinationTile));
+        ReplayController.Instance.AddStep(new ReplayStep(this, ReplayStep.StepTypes.Move, intermediateTile, 0));
+        ReplayController.Instance.AddStep(new ReplayStep(this, ReplayStep.StepTypes.Move, destinationTile, 0 ));
 
         transform.DOMove(intermediateTile.transform.position, ActorController.Instance.MoveTweenTime / 2f).SetEase(Ease.Linear);
 
@@ -185,18 +205,14 @@ public class ActorHandler : MonoBehaviour
         _slideTween = transform.DOLocalMove(Vector2.zero,
             ActorController.Instance.MoveTweenTime/2f).SetDelay(ActorController.Instance.MoveTweenTime / 2f).OnComplete(CompleteAction).SetEase(Ease.Linear);
 
-        
+        if (!_isAgent)
+        {
+            intermediateTile.SetClue(TileHandler.ClueTypes.Passage);
+            destinationTile.SetClue(TileHandler.ClueTypes.Passage);
+        }
     }
 
-    public void SlideToNewTile(TileHandler newTile, float time)
-    {
-        _slideTween.Kill();
-
-        transform.parent = newTile.VisualsTransform;
-        _slideTween = transform.DOLocalMove(Vector2.zero, time);
-    }
-
-    public void SlideToNewTileViaSecondTile(TileHandler destinationTile, TileHandler intermediateTile, float time)
+    public void SlideToNewTileViaSecondTile_Replay(TileHandler destinationTile, TileHandler intermediateTile, float time)
     {
         _slideTween.Kill();
 
@@ -356,7 +372,7 @@ public class ActorHandler : MonoBehaviour
         }
         else
         {
-            if (CurrentTile == TileController.Instance.FoxDestinationTile)
+            if (CurrentTile == TileController.Instance.EnemyDestinationTile)
             {
                 GameController.Instance.EndRun_Defeat();
                 Debug.Log("Fox wins!");
@@ -376,45 +392,10 @@ public class ActorHandler : MonoBehaviour
             TileController.Instance.FindAllDestinationDistances();
             TileController.Instance.FindAllAgentDistances();
 
-
-
-
-            //TileHandler highestAgent = null;
-            //int bestAgentScore = 0;
-            //foreach (var tile in CurrentTile.RandomizedLinkedTiles)
-            //{
-            //    if (tile.AgentDist > bestAgentScore)
-            //    {
-            //        highestAgent = tile;
-            //        bestAgentScore = tile.AgentDist;
-            //    }
-            //}
-
-            //TileHandler lowestDestination = null;
-            //int bestDestinationScore = int.MaxValue;
-            //foreach (var tile in CurrentTile.RandomizedLinkedTiles)
-            //{
-            //    if (tile.DestinationDist < bestDestinationScore)
-            //    {
-            //        lowestDestination = tile;
-            //        bestDestinationScore = tile.DestinationDist;
-            //    }
-            //}
-
-            //TileHandler nextTile = null;
-            //if (lowestDestination.AgentDist <= 1)
-            //{
-            //    nextTile = ;
-            //}
-            //else if ()
-
             float scoreToBeat = float.NegativeInfinity;
             TileHandler nextTile = null;
             foreach (var tile in CurrentTile.LinkedTiles)
-            {
-                
-
-
+            {            
                 //as times goes on, moving to destination begins to be worth more
                 float score = GenerateAgentScore(tile.AgentDist) + GenerateDestinationScore(tile.DestinationDist);
 
