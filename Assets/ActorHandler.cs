@@ -121,13 +121,17 @@ public class ActorHandler : MonoBehaviour
 
         if (ActorController.Instance.Enemy.CurrentTile == clickedTile)
         {
-            Debug.Log("Attempting arrest: Found the fox!");
+            ReplayController.Instance.AddStep(new ReplayStep(this, ReplayStep.StepTypes.Arrest, clickedTile, 0));
+            //Debug.Log("Attempting arrest: Found the fox!");
+            clickedTile.SetActionTaken(TileHandler.ActionTypes.Arrested);
             ActorController.Instance.Enemy.ShowSprite();
             GameController.Instance.EndRun_Victory_Arrest();
         }
         else
         {
-            Debug.Log("Attempting arrest: nothing...");
+            ReplayController.Instance.AddStep(new ReplayStep(this, ReplayStep.StepTypes.Arrest, clickedTile, 0));
+            clickedTile.SetActionTaken(TileHandler.ActionTypes.Arrested);
+            //Debug.Log("Attempting arrest: nothing...");
         }
 
         CompleteTurn();

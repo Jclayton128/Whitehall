@@ -7,12 +7,15 @@ using UnityEngine;
 
 public class TileHandler : MonoBehaviour
 {
-    public enum ClueTypes { None, Origin, Passage, JustSearched }
+    public enum ClueTypes { None, Origin, Passage }
+    public enum ActionTypes { None, Searched, Arrested }
 
     //refs
     [SerializeField] SpriteRenderer _tileSR = null;
     [SerializeField] SpriteRenderer _borderSR = null;
     [SerializeField] SpriteRenderer _clueSR = null;
+    [SerializeField] SpriteRenderer _secretClueSR = null;
+    [SerializeField] SpriteRenderer _actionTakenSR = null;
     [SerializeField] TextMeshPro _text = null;
     [SerializeField] TextMeshPro _agentDistanceTMP = null;
     [SerializeField] TextMeshPro _destinationDistanceTMP = null;
@@ -34,17 +37,17 @@ public class TileHandler : MonoBehaviour
     public List<TileHandler> LinkedTiles = new List<TileHandler> ();
     public List<TileHandler> RandomizedLinkedTiles => GetRandomizeLinkedTiles();
 
-
     public ActorHandler Occupant => GetComponentInChildren<ActorHandler> ();
     [SerializeField] ClueTypes _clueType = ClueTypes.None;
     public ClueTypes ClueType => _clueType;
-    //[SerializeField] bool _isClueRevealed = false;
-    Color _previousTileColor;
+
     public int TileIndex { get; private set; }
 
     public TileHandler PreviousTile;
     public int AgentDist;
     public int DestinationDist;
+
+    bool _enemyHasPassedThisWay = false;
 
 
     private void Awake()
@@ -253,7 +256,8 @@ public class TileHandler : MonoBehaviour
             _clueSR.enabled = true;
         }
         else if (newClueType == ClueTypes.Passage)
-        {                
+        {
+
             if (_clueType == ClueTypes.Origin)
             {
                 // do nothing; origin clues should outlast passage clues.
@@ -264,6 +268,10 @@ public class TileHandler : MonoBehaviour
                 _clueSR.sprite = null; //remain null until player check-reveals this tile
             }
 
+            if (GameController.Instance.GameState == GameController.GameStates.OutOfRun)
+            {
+                _secretClueSR.enabled = true;
+            }
                     
         }
         
@@ -277,9 +285,8 @@ public class TileHandler : MonoBehaviour
 
         if (_clueType == ClueTypes.None)
         {
-            _clueType = ClueTypes.JustSearched;
-            _clueSR.enabled = true;
-            _clueSR.sprite = TileController.Instance.JustSearchedClue;
+            //_clueType = ClueTypes.JustSearched;
+            SetActionTaken(ActionTypes.Searched);
             return false;
         }
         else if (_clueType == ClueTypes.Origin)
@@ -294,6 +301,27 @@ public class TileHandler : MonoBehaviour
         }
 
         return false;
+    }
+
+
+    public void SetActionTaken(ActionTypes actionTaken)
+    {
+        if (actionTaken == ActionTypes.Searched)
+        {
+            _actionTakenSR.enabled = true;
+            _actionTakenSR.sprite = TileController.Instance.JustSearchedClue;
+        }
+
+        else if (actionTaken == ActionTypes.Arrested)
+        {
+            _actionTakenSR.enabled = true;
+            _actionTakenSR.sprite = TileController.Instance.JustArrestedClue;
+        }
+    }
+
+    public void ClearActionTaken()
+    {
+        _actionTakenSR.enabled = false;
     }
 
     public void HighlightTile()
@@ -339,11 +367,14 @@ public class TileHandler : MonoBehaviour
 
     private void HandlePriorityActorTurnCompleting()
     {
-        if (_clueType == ClueTypes.JustSearched)
-        {
-            _clueType = ClueTypes.None;
-            _clueSR.enabled = false;
-        }
+        //This could be used to hide Action Taken sprites after every actor goes.
+        //Alternatively, consider clearing the Action Taken sprites at the end of each turn.
+
+        //if (_clueType == ClueTypes.JustSearched)
+        //{
+        //    _clueType = ClueTypes.None;
+        //    _clueSR.enabled = false;
+        //}
     }
 
     public void FindAndPublishClosestAgentDistance()

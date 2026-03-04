@@ -40,6 +40,7 @@ public class ReplayController : MonoBehaviour
 
         TileController.Instance.EnemyStartTile.SetClue(TileHandler.ClueTypes.Origin);
         TileController.Instance.EnemyDestinationTile.SetClue(TileHandler.ClueTypes.Origin);
+        ActorController.Instance.Enemy.ShowSprite();
 
         GameController.Instance.SetTurnIndication(1);
 
@@ -68,7 +69,7 @@ public class ReplayController : MonoBehaviour
             if (currentStep.Actor == ActorController.Instance.Enemy)
             {
                 //When the fox is back up, clear out all the Just Searched clues from the 3 agents' turns
-                TileController.Instance.ClearJustSearchedClueFromAllTiles();
+                TileController.Instance.ClearActionTakensFromAllTiles();
             }
 
             ActorController.Instance.EnlargeActorPortait(currentStep.Actor);
@@ -87,10 +88,11 @@ public class ReplayController : MonoBehaviour
 
                 case ReplayStep.StepTypes.Search:
                     TileController.Instance.SearchForClue(currentStep.TargetLocation);
+                    currentStep.TargetLocation.SetActionTaken(TileHandler.ActionTypes.Searched);
                     break;
 
                 case ReplayStep.StepTypes.Arrest:
-                    Debug.Log("Step type undefined");
+                    currentStep.TargetLocation.SetActionTaken(TileHandler.ActionTypes.Arrested);
                     break;
 
                 case ReplayStep.StepTypes.TurnCountIncrement:

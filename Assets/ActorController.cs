@@ -134,6 +134,10 @@ public class ActorController : MonoBehaviour
         {
             _priorityIndex = 0;
             GameController.Instance.AdvanceTurn();
+
+
+            TileController.Instance.ClearActionTakensFromAllTiles();
+
         }
 
         _turnorderPortraits[_priorityIndex].EnlargePortrait();

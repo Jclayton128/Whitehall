@@ -32,6 +32,8 @@ public class TileController : MonoBehaviour
     public Sprite OriginClue = null;
     public Sprite PassageClue = null;
     public Sprite JustSearchedClue = null;
+    public Sprite JustArrestedClue = null;
+    public Sprite SecretPassageClue = null;
 
     public Color Color_noMove = Color.black;
     public Color Color_pass = Color.blue;
@@ -600,10 +602,6 @@ public class TileController : MonoBehaviour
 
     #region Helpers
 
-
-
-
-
     public Vector2Int GetVec2Int(TileHandler tile)
     {
         Vector2Int origin = Vector2Int.zero;
@@ -739,14 +737,11 @@ public class TileController : MonoBehaviour
         }
     }
 
-    public void ClearJustSearchedClueFromAllTiles()
+    public void ClearActionTakensFromAllTiles()
     {
         foreach (var tile in _tilesRaw)
         {
-            if (tile.ClueType == TileHandler.ClueTypes.JustSearched)
-            {
-                tile.SetClue(TileHandler.ClueTypes.None);
-            }
+            tile.ClearActionTaken();
         }
     }
 
@@ -783,5 +778,6 @@ public class TileController : MonoBehaviour
             }
         }
     }
+
     #endregion
 }
