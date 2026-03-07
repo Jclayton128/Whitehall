@@ -21,13 +21,25 @@ public class TileController : MonoBehaviour
     [SerializeField] int _arenaSize_X = 11;
     public int ArenaSize_X => _arenaSize_X;
     [SerializeField] int _arenaSize_Y = 9;
-    public float ClickTweenTime = 0.75f;
-    [SerializeField] float _yFactor = 1.0f;
+
+    [SerializeField] float _yTileFactor = 1.0f;
+    public float YTileFactor => _yTileFactor;
+
+    [Header ("Tree Stuff")]
+    [SerializeField] float _yTreeFactor = 1.0f;
+    [SerializeField] float _yTreeOffset = 0.2f;
+    [SerializeField] float _perlinZoom = 0.2f;
+
+    public float YTreeFactor => _yTreeFactor;
+    public float YTreeOffset => _yTreeOffset;
+    float _treeRandX;
+    float _treeRandY;
 
     [SerializeField] float _tileGap_x = 0.5f;
     [SerializeField] float _tileGap_y = 0.5f;
 
     [SerializeField] TileLinkageHandler _tileLinkagePrefab = null;
+    public float ClickTweenTime = 0.75f;
 
     public Sprite OriginClue = null;
     public Sprite PassageClue = null;
@@ -42,6 +54,7 @@ public class TileController : MonoBehaviour
     public Color Color_highlight = Color.yellow;
 
     //state
+    System.Random _rnd;
     bool _isProcessingClick = false;
     [SerializeField] List<TileHandler> _tilesRaw = new List<TileHandler>();
     Dictionary<Vector2Int, TileHandler> _tilesLocation = new Dictionary<Vector2Int, TileHandler>();
@@ -57,7 +70,7 @@ public class TileController : MonoBehaviour
     private void Awake()
     {
         Instance = this;
-
+        _rnd = new System.Random();
 
     }
 
@@ -65,6 +78,9 @@ public class TileController : MonoBehaviour
     {
         _tileHolder.transform.position = Vector2.zero;
         RemoveAllTiles();
+
+        _treeRandX = (float)_rnd.NextDouble();
+        _treeRandY = (float)_rnd.NextDouble();
 
         ConstructArena();
         LinkTilesLogically();
@@ -114,7 +130,7 @@ public class TileController : MonoBehaviour
             for (int iy = 0; iy < _arenaSize_Y; iy++)
             {
                 walker.x = ix + (_tileGap_x * ix);
-                walker.y = (iy * _yFactor) + (_tileGap_y * iy);
+                walker.y = (iy * _yTileFactor) + (_tileGap_y * iy);
                 CreateNewTile(walker, new Vector2Int(ix, iy));
             }
         }
@@ -132,6 +148,16 @@ public class TileController : MonoBehaviour
         _tilesLocation.Add(indexPos, newTile);
 
         newTile.AssignIndexNumber(_tilesRaw.IndexOf(newTile));
+
+        float xVal = ((float)indexPos.x / (float)_arenaSize_X) + _treeRandX;
+        float yVal = ((float)indexPos.y / (float)_arenaSize_Y) +_treeRandY;
+
+        float rawTree = Mathf.PerlinNoise(xVal * _perlinZoom, yVal * _perlinZoom);
+        //Debug.Log($"locX: {indexPos.x} / arenaSizeX {_arenaSize_X}");
+        
+        int treeCount = Mathf.FloorToInt( Mathf.Lerp(0, 4, rawTree));
+        Debug.Log($"{treeCount}: {Mathf.Lerp(0, 4, rawTree)} from {xVal} / {yVal}");
+        newTile.SetupTrees(treeCount);
     }
 
     private void LinkTilesLogically()
@@ -606,7 +632,7 @@ public class TileController : MonoBehaviour
     {
         Vector2Int origin = Vector2Int.zero;
         origin.x = Mathf.RoundToInt(tile.transform.localPosition.x);
-        origin.y = Mathf.RoundToInt(tile.transform.localPosition.y / _yFactor);
+        origin.y = Mathf.RoundToInt(tile.transform.localPosition.y / _yTileFactor);
         return origin;
 
     }
@@ -627,7 +653,7 @@ public class TileController : MonoBehaviour
     {
         Vector2Int origin = Vector2Int.zero;
         origin.x = Mathf.RoundToInt(worldPosition.x);
-        origin.y = Mathf.RoundToInt(worldPosition.y / _yFactor);
+        origin.y = Mathf.RoundToInt(worldPosition.y / _yTileFactor);
 
         if (_tilesLocation.ContainsKey(origin))
         {

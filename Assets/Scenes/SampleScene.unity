@@ -1218,7 +1218,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 945837924}
         m_TargetAssemblyTypeName: GameController, Assembly-CSharp
-        m_MethodName: StartRun
+        m_MethodName: StartNewRun
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1301,10 +1301,10 @@ RectTransform:
   - {fileID: 938552143}
   m_Father: {fileID: 459542072}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.9024584}
-  m_AnchorMax: {x: 0.99583334, y: 0.9958333}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 178.5, y: -51.4}
+  m_SizeDelta: {x: 357, y: 67}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &938552143 stripped
 RectTransform:
@@ -1346,12 +1346,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _tileHolder: {fileID: 440572000}
   _tilePrefab: {fileID: 2654114279610761254, guid: acee6a6fabdabc84dab62803d3e11182, type: 3}
-  _arenaSize_X: 10
+  _arenaSize_X: 9
   _arenaSize_Y: 9
   ClickTweenTime: 0.75
-  _yFactor: 1
-  _tileGap_x: 0.3
-  _tileGap_y: 0.3
+  _yTileFactor: 1
+  _yTreeFactor: 0.5
+  _yTreeOffset: 0.2
+  _tileGap_x: 0.4
+  _tileGap_y: 0.4
   _tileLinkagePrefab: {fileID: 386113983379012561, guid: 6d7a183e53390d6479bd240900a32aa3, type: 3}
   OriginClue: {fileID: 21300000, guid: 7450cd284991ec948b569381b50155a4, type: 3}
   PassageClue: {fileID: 21300000, guid: 44f7c3e80c422d548b323a56174e63aa, type: 3}
@@ -1583,9 +1585,9 @@ RectTransform:
   - {fileID: 748359118}
   m_Father: {fileID: 459542072}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 323}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: -39.599976}
   m_SizeDelta: {x: 708.7725, y: 64.953}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1776854313
@@ -1620,9 +1622,9 @@ RectTransform:
   - {fileID: 1800321102}
   m_Father: {fileID: 459542072}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -177.19, y: 323}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: -177.19, y: -39.600006}
   m_SizeDelta: {x: 354.39, y: 64.953}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1001 &1800321101

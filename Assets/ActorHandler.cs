@@ -341,17 +341,17 @@ public class ActorHandler : MonoBehaviour
     {
         if (_abilityQueue.Count == 0)
         {
-            Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
+            //Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
             return;
         }
 
         if (_abilityQueue[0] == AgentData.AgentAbility.Move)
         {
-            Cursor.SetCursor(ActorController.Instance.MoveAbilityTexture, new Vector2(92, 92), CursorMode.Auto);
+            //Cursor.SetCursor(ActorController.Instance.MoveAbilityTexture, new Vector2(92, 92), CursorMode.Auto);
         }
         else if (_abilityQueue[0] == AgentData.AgentAbility.Search)
         {
-            Cursor.SetCursor(ActorController.Instance.SearchAbilityTexture, new Vector2(136, 136), CursorMode.Auto);
+            //Cursor.SetCursor(ActorController.Instance.SearchAbilityTexture, new Vector2(136, 136), CursorMode.Auto);
         }
 
     }

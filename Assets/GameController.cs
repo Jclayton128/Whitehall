@@ -40,7 +40,7 @@ public class GameController : MonoBehaviour
         //_gameEndPanel.SetActive(false);
     }
 
-    public void StartRun()
+    public void StartNewRun()
     {
         _timer = 0;
         _score = _startingScore;

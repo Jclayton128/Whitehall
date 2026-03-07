@@ -19,8 +19,9 @@ public class TileHandler : MonoBehaviour
     [SerializeField] TextMeshPro _text = null;
     [SerializeField] TextMeshPro _agentDistanceTMP = null;
     [SerializeField] TextMeshPro _destinationDistanceTMP = null;
-
     [SerializeField] Transform _visualsTransform = null;
+    [SerializeField] SpriteRenderer _treeSR = null;
+
     public Transform VisualsTransform => _visualsTransform;
 
     Collider2D _coll;
@@ -29,6 +30,8 @@ public class TileHandler : MonoBehaviour
     [SerializeField] float hoverTweenTime = 0.125f;
     [SerializeField] float _hoverYIncrease = 0.1f;
 
+    [SerializeField] Sprite[] _treeSprites = null;
+    [SerializeField] float _treeRadius = 1f;
 
     //state
     Tween _hoverTween;
@@ -203,6 +206,24 @@ public class TileHandler : MonoBehaviour
         {
             LinkedTiles.Remove(tileToRemove);
         }
+    }
+
+    public void SetupTrees(int treeCount)
+    {
+        if (treeCount == 0)
+        {
+            _treeSR.enabled = false;
+            return;
+        }
+
+        Vector2 pos = UnityEngine.Random.insideUnitCircle.normalized * _treeRadius;
+        float xRand = UnityEngine.Random.Range(.5f, 1f);
+        pos.x *= xRand;
+        pos.y *= TileController.Instance.YTreeFactor;
+        pos.y += TileController.Instance.YTreeOffset;
+        _treeSR.sprite = _treeSprites[treeCount - 1];
+        _treeSR.transform.localPosition = pos;
+
     }
 
     #endregion

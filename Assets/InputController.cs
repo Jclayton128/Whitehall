@@ -25,7 +25,7 @@ public class InputController : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.N))
         {
-            GameController.Instance.StartRun();
+            GameController.Instance.StartNewRun();
         }
     }
 }
