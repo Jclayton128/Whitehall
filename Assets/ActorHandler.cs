@@ -2,9 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
+using TMPro;
 using UnityEngine;
-using UnityEngine.Rendering;
-using UnityEngine.Tilemaps;
+
 
 
 public class ActorHandler : MonoBehaviour
@@ -24,6 +24,7 @@ public class ActorHandler : MonoBehaviour
 
     //state
     Tween _slideTween;
+    Tween _colorTween;
     public bool IsAgent => _isAgent;
 
     public TileHandler CurrentTile => GetCurrentTile();
@@ -127,6 +128,7 @@ public class ActorHandler : MonoBehaviour
             //Debug.Log("Attempting arrest: Found the fox!");
 
             clickedTile.SetActionTaken(TileHandler.ActionTypes.Arrested);
+            PingController.Instance.SpawnPing(clickedTile.transform.position);
             ActorController.Instance.Enemy.ShowSprite();
             GameController.Instance.EndRun_Victory_Arrest();
         }
@@ -359,11 +361,34 @@ public class ActorHandler : MonoBehaviour
     public void ShowSprite()
     {
         _portraitSR.enabled = true;
+        Color col = _portraitSR.color;
+        col.a = 1;
+        _portraitSR.color = col;
+    }
+
+    public void ShowSprite(float fadeTime)
+    {
+        _portraitSR.enabled = true;
+        Color col = _portraitSR.color;
+        col.a = 0;
+        _portraitSR.color = col;
+        _colorTween.Kill();
+        _colorTween = _portraitSR.DOFade(1, fadeTime);
     }
 
     public void HideSprite()
     {
         _portraitSR.enabled = false;
+        Color col = _portraitSR.color;
+        col.a = 0;
+        _portraitSR.color = col;
+    }
+
+    public void HideSprite(float fadeTime)
+    {
+        _portraitSR.enabled = true;
+        _colorTween.Kill();
+        _colorTween = _portraitSR.DOFade(0, fadeTime);
     }
 
     #region AI

@@ -33,6 +33,12 @@ public class ReplayController : MonoBehaviour
         //Debug.Log($"queue length: {_stepQueue.Count}. Step Type {newStep.StepType}");
     }
 
+
+    public void BeginPlayback(float delayTime)
+    {
+        Invoke(nameof(BeginPlayback), delayTime);
+    }
+
     public void BeginPlayback()
     {
         TileController.Instance.DeHighlightAllTiles();

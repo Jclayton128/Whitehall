@@ -68,7 +68,10 @@ public class GameController : MonoBehaviour
         _gameEndPanel.SetActive(true);
         _gameEndTMP.text = "Defeat - the fox got away!";
         GameState = GameStates.OutOfRun;
-        ReplayController.Instance.BeginPlayback();
+
+        ActorController.Instance.Enemy.ShowSprite(1f);
+        PingController.Instance.SpawnPing(ActorController.Instance.Enemy.transform.position);
+        ReplayController.Instance.BeginPlayback(3f);
     }
 
     public void EndRun_Victory_Arrest()
@@ -76,7 +79,9 @@ public class GameController : MonoBehaviour
         _gameEndPanel.SetActive(true);
         _gameEndTMP.text = $"Victory - you found the fox! Score: {_score.ToString()}";
         GameState = GameStates.OutOfRun;
-        ReplayController.Instance.BeginPlayback();
+        ActorController.Instance.Enemy.ShowSprite(1f);
+        PingController.Instance.SpawnPing(ActorController.Instance.Enemy.transform.position);
+        ReplayController.Instance.BeginPlayback(3f);
     }
 
     public void EndRun_Victory_Time()
@@ -84,7 +89,10 @@ public class GameController : MonoBehaviour
         _gameEndPanel.SetActive(true);
         _gameEndTMP.text = $"Victory - the fox ran out of time! Score: {_score.ToString()}";
         GameState = GameStates.OutOfRun;
-        ReplayController.Instance.BeginPlayback();
+
+        ActorController.Instance.Enemy.ShowSprite(1f);
+        PingController.Instance.SpawnPing(ActorController.Instance.Enemy.transform.position);
+        ReplayController.Instance.BeginPlayback(3f);
     }
 
     public void EndRun_Neither()
