@@ -316,6 +316,43 @@ public class TileController : MonoBehaviour
         int rand = UnityEngine.Random.Range(0, possibleOptions.Count);
         EnemyDestinationTile = possibleOptions[rand];
     }
+
+    public TileHandler GetPossibleDestinationTile_Bottom()
+    {
+        //get an edge or next-to-edge tile
+        List<TileHandler> possibleOptions = new List<TileHandler>();
+
+        foreach (var tile in _tilesRaw)
+        {
+            if (tile.IndexPos.y == 0 && tile.IndexPos.x != 0)
+            {
+                possibleOptions.Add(tile);
+            }
+
+        }
+
+        int rand = UnityEngine.Random.Range(0, possibleOptions.Count);
+       return possibleOptions[rand];
+    }
+
+    public TileHandler GetPossibleDestinationTile_Left()
+    {
+        //get an edge or next-to-edge tile
+        List<TileHandler> possibleOptions = new List<TileHandler>();
+
+        foreach (var tile in _tilesRaw)
+        {
+            if (tile.IndexPos.x == 0 && tile.IndexPos.y != 0)
+            {
+                possibleOptions.Add(tile);
+            }
+
+        }
+
+        int rand = UnityEngine.Random.Range(0, possibleOptions.Count);
+        return possibleOptions[rand];
+    }
+
     private void RecenterTiles()
     {
         Vector2 newPos = Vector2.zero;
@@ -434,10 +471,9 @@ public class TileController : MonoBehaviour
         return pathAsList.Count - 1;
     }
 
-    public int GetDistanceToDestination(TileHandler startingTile)
+    public int GetDistanceToSpecialTile(TileHandler startingTile, TileHandler specialTile)
     {
-
-        if (startingTile == EnemyDestinationTile)
+        if (startingTile == specialTile)
         {
             return 0;
         }
@@ -461,7 +497,7 @@ public class TileController : MonoBehaviour
 
             tileBeingChecked = tilesToCheck.Dequeue();
 
-            if (tileBeingChecked == EnemyDestinationTile)
+            if (tileBeingChecked == specialTile)
             {
                 break;
             }
@@ -527,6 +563,11 @@ public class TileController : MonoBehaviour
         List<TileHandler> pathAsList = new List<TileHandler>(currentCheckPath);
 
         return pathAsList.Count - 1;
+    }
+
+    public int GetDistanceToDestination(TileHandler startingTile)
+    {
+        return GetDistanceToSpecialTile(startingTile, EnemyDestinationTile);
     }
 
     public List<TileHandler> GetShortestPathToDestination(TileHandler startingTile, TileHandler destinationTile)
@@ -786,6 +827,14 @@ public class TileController : MonoBehaviour
         foreach (var tile in _tilesRaw)
         {
             tile.FindAndPublishDestinationDistance();
+        }
+    }
+
+    public void FindAllSpecialDistances(TileHandler specialTile)
+    {
+        foreach (var tile in _tilesRaw)
+        {
+            tile.FindSpecialDistance(specialTile);
         }
     }
 

@@ -48,8 +48,9 @@ public class TileHandler : MonoBehaviour
     public int TileIndex { get; private set; }
 
     public TileHandler PreviousTile;
-    public int AgentDist;
-    public int DestinationDist;
+    public int AgentDist { get; private set; }
+    public int DestinationDist { get; private set; }
+    public int SpecialDistance { get; private set; }
 
     bool _enemyHasPassedThisWay = false;
 
@@ -429,6 +430,11 @@ public class TileHandler : MonoBehaviour
     {
         DestinationDist = TileController.Instance.GetDistanceToDestination(this);
         _destinationDistanceTMP.text = DestinationDist.ToString();
+    }
+
+    public void FindSpecialDistance(TileHandler specialTarget)
+    {
+        SpecialDistance = TileController.Instance.GetDistanceToSpecialTile(this, specialTarget);
     }
 
     public void ShowTileValues()

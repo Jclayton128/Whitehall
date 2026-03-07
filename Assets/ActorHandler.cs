@@ -9,6 +9,8 @@ using UnityEngine;
 
 public class ActorHandler : MonoBehaviour
 {
+    public enum EnemyStrategies { Legacy, DestinationSprint, DecoySprint}
+
     //ref
     [SerializeField] bool _isAgent = false;
 
@@ -39,6 +41,10 @@ public class ActorHandler : MonoBehaviour
 
     [SerializeField] TileHandler _startingTile;
     public TileHandler StartingTile => _startingTile;
+
+    [SerializeField] EnemyStrategies _enemyStrategy = EnemyStrategies.DecoySprint;
+
+
 
     public void SetAgentData(AgentData data, int agentIndex)
     {
@@ -128,8 +134,7 @@ public class ActorHandler : MonoBehaviour
             //Debug.Log("Attempting arrest: Found the fox!");
 
             clickedTile.SetActionTaken(TileHandler.ActionTypes.Arrested);
-            PingController.Instance.SpawnPing(clickedTile.transform.position);
-            ActorController.Instance.Enemy.ShowSprite();
+
             GameController.Instance.EndRun_Victory_Arrest();
         }
         else
@@ -408,63 +413,23 @@ public class ActorHandler : MonoBehaviour
             if (CurrentTile == TileController.Instance.EnemyDestinationTile)
             {
                 GameController.Instance.EndRun_Defeat();
-                Debug.Log("Fox wins!");
                 return;
             }
 
             else if (GameController.Instance.RemainingTurns <= 0)
             {
-                GameController.Instance.EndRun_Victory_Arrest();
-                Debug.Log("Agents win via time!");
+                GameController.Instance.EndRun_Victory_Time();
                 return;
             }
-
 
             Debug.Log("Fox does his movement...");
 
             TileController.Instance.FindAllDestinationDistances();
             TileController.Instance.FindAllAgentDistances();
 
-            float scoreToBeat = float.NegativeInfinity;
-            TileHandler nextTile = null;
-            foreach (var tile in CurrentTile.LinkedTiles)
-            {            
-                //as times goes on, moving to destination begins to be worth more
-                float score = GenerateAgentScore(tile.AgentDist) + GenerateDestinationScore(tile.DestinationDist);
-
-                if (_visitedTiles.Contains(tile)) 
-                {
-                    //As time goes on, doubling-back more penalized.
-                    score -= (0.02f * GameController.Instance.TurnCount);
-                }
-
-                float randomFuzz = UnityEngine.Random.Range(-.1f, .1f);
-
-                score += randomFuzz;
-                
-                if (DebugController.Instance && DebugController.Instance.IsInDebugMode)
-                {
-                    Debug.Log($"{tile.TileIndex} scored {score}. Fuzz: {randomFuzz}. Agent Score: {GenerateAgentScore(tile.AgentDist)}. Dest Score: {GenerateDestinationScore(tile.DestinationDist)}");
-                }
-                
-                if (score > scoreToBeat)
-                {
-                    nextTile = tile;
-                    scoreToBeat = score;
-                }
-                else if (score == scoreToBeat)
-                {
-                    if (tile.AgentDist > nextTile.AgentDist)
-                    {
-                        nextTile = tile;
-                    }
-                    else
-                    {
-                        //keep nextTile as nextTile if still coequal
-                    }
-                }
-            }
-
+            //var nextTile = ExecuteStrategy_Legacy();
+            //var nextTile = ExecuteStrategy_DestinationSprint();
+            var nextTile = ExecuteStrategy_DecoySprint();
 
             nextTile.SetClue(TileHandler.ClueTypes.Passage);
             SlideToNewTile(nextTile);
@@ -472,6 +437,131 @@ public class ActorHandler : MonoBehaviour
         }
 
     }
+
+    private TileHandler ExecuteStrategy_Legacy()
+    {
+        float scoreToBeat = float.NegativeInfinity;
+        TileHandler nextTile = null;
+        foreach (var tile in CurrentTile.LinkedTiles)
+        {
+            //as times goes on, moving to destination begins to be worth more
+            float score = GenerateAgentScore(tile.AgentDist) + GenerateDestinationScore(tile.DestinationDist);
+
+            if (_visitedTiles.Contains(tile))
+            {
+                //As time goes on, doubling-back more penalized.
+                score -= (0.02f * GameController.Instance.TurnCount);
+            }
+
+            float randomFuzz = UnityEngine.Random.Range(-.1f, .1f);
+
+            score += randomFuzz;
+
+            if (DebugController.Instance && DebugController.Instance.IsInDebugMode)
+            {
+                Debug.Log($"{tile.TileIndex} scored {score}. Fuzz: {randomFuzz}. Agent Score: {GenerateAgentScore(tile.AgentDist)}. Dest Score: {GenerateDestinationScore(tile.DestinationDist)}");
+            }
+
+            if (score > scoreToBeat)
+            {
+                nextTile = tile;
+                scoreToBeat = score;
+            }
+            else if (score == scoreToBeat)
+            {
+                if (tile.AgentDist > nextTile.AgentDist)
+                {
+                    nextTile = tile;
+                }
+                else
+                {
+                    //keep nextTile as nextTile if still coequal
+                }
+            }
+        }
+        return nextTile;
+    }
+
+    private TileHandler ExecuteStrategy_DestinationSprint()
+    {
+        float scoreToBeat = float.NegativeInfinity;
+        TileHandler nextTile = null;
+
+        foreach (var tile in CurrentTile.LinkedTiles)
+        {
+            float score = GenerateDestinationScore(tile.DestinationDist);
+
+            //float randomFuzz = UnityEngine.Random.Range(-.1f, .1f);
+            //score += randomFuzz;
+
+            //if (DebugController.Instance && DebugController.Instance.IsInDebugMode)
+            //{
+            //    Debug.Log($"{tile.TileIndex} scored {score}. Dest Score: {GenerateDestinationScore(tile.DestinationDist)}");
+            //}
+
+            if (score > scoreToBeat)
+            {
+                nextTile = tile;
+                scoreToBeat = score;
+            }            
+        }
+
+        return nextTile;
+    }
+
+    [SerializeField] private TileHandler _decoyDestination;
+
+    public TileHandler ExecuteStrategy_DecoySprint()
+    {
+        if (_decoyDestination == null)
+        {
+            if (TileController.Instance.EnemyDestinationTile.IndexPos.x == 0)
+            {
+                //true destination is on left, so get decoy destination on bottom
+                _decoyDestination = TileController.Instance.GetPossibleDestinationTile_Bottom();
+            }
+
+            if (TileController.Instance.EnemyDestinationTile.IndexPos.y == 0)
+            {
+                //true destination is on bottom, so get decoy destination on left
+                _decoyDestination = TileController.Instance.GetPossibleDestinationTile_Left();
+            }
+        }
+
+        if (CurrentTile == _decoyDestination || CurrentTile.DestinationDist >= GameController.Instance.RemainingTurns - 1)
+        {
+            _enemyStrategy = EnemyStrategies.DestinationSprint;
+            return ExecuteStrategy_DestinationSprint();
+        }
+
+        TileController.Instance.FindAllSpecialDistances(_decoyDestination);
+
+        float scoreToBeat = float.NegativeInfinity;
+        TileHandler nextTile = null;
+
+        foreach (var tile in CurrentTile.LinkedTiles)
+        {
+            float score = 10f / tile.SpecialDistance;
+
+            //float randomFuzz = UnityEngine.Random.Range(-.1f, .1f);
+            //score += randomFuzz;
+
+            //if (DebugController.Instance && DebugController.Instance.IsInDebugMode)
+            //{
+            //    Debug.Log($"{tile.TileIndex} scored {score}. Dest Score: {GenerateDestinationScore(tile.DestinationDist)}");
+            //}
+
+            if (score > scoreToBeat)
+            {
+                nextTile = tile;
+                scoreToBeat = score;
+            }
+        }
+
+        return nextTile;
+
+    }
+
 
     private float GenerateDestinationScore(int destinationDistance)
     {
