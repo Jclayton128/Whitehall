@@ -47,11 +47,13 @@ public class TileController : MonoBehaviour
     public Sprite JustArrestedClue = null;
     public Sprite SecretPassageClue = null;
 
-    public Color Color_noMove = Color.black;
+    public Color Color_basic = Color.black;
     public Color Color_pass = Color.blue;
     public Color Color_legalMove = Color.green;
     public Color Color_legalSearch = Color.green;
     public Color Color_highlight = Color.yellow;
+    public Color Color_Passage = Color.yellow;
+    public Color Color_Origin = Color.yellow;
 
     //state
     System.Random _rnd;
@@ -156,7 +158,7 @@ public class TileController : MonoBehaviour
         //Debug.Log($"locX: {indexPos.x} / arenaSizeX {_arenaSize_X}");
         
         int treeCount = Mathf.FloorToInt( Mathf.Lerp(0, 4, rawTree));
-        Debug.Log($"{treeCount}: {Mathf.Lerp(0, 4, rawTree)} from {xVal} / {yVal}");
+        //Debug.Log($"{treeCount}: {Mathf.Lerp(0, 4, rawTree)} from {xVal} / {yVal}");
         newTile.SetupTrees(treeCount);
     }
 

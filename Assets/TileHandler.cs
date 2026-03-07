@@ -16,6 +16,7 @@ public class TileHandler : MonoBehaviour
     [SerializeField] SpriteRenderer _clueSR = null;
     [SerializeField] SpriteRenderer _secretClueSR = null;
     [SerializeField] SpriteRenderer _actionTakenSR = null;
+    [SerializeField] SpriteRenderer _actionAvailableSR = null;
     [SerializeField] TextMeshPro _text = null;
     [SerializeField] TextMeshPro _agentDistanceTMP = null;
     [SerializeField] TextMeshPro _destinationDistanceTMP = null;
@@ -217,10 +218,12 @@ public class TileHandler : MonoBehaviour
         }
 
         Vector2 pos = UnityEngine.Random.insideUnitCircle.normalized * _treeRadius;
-        float xRand = UnityEngine.Random.Range(.5f, 1f);
-        pos.x *= xRand;
+        //float xRand = UnityEngine.Random.Range(.9f, 1f);
+        //pos.x *= xRand;
         pos.y *= TileController.Instance.YTreeFactor;
+        pos.y = Mathf.Abs(pos.y);
         pos.y += TileController.Instance.YTreeOffset;
+
         _treeSR.sprite = _treeSprites[treeCount - 1];
         _treeSR.transform.localPosition = pos;
 
@@ -274,6 +277,7 @@ public class TileHandler : MonoBehaviour
         {
             _clueType = ClueTypes.Origin;
             _clueSR.sprite = TileController.Instance.OriginClue;
+            _tileSR.color = TileController.Instance.Color_Origin;
             _clueSR.enabled = true;
         }
         else if (newClueType == ClueTypes.Passage)
@@ -317,6 +321,7 @@ public class TileHandler : MonoBehaviour
         else if (_clueType == ClueTypes.Passage)
         {
             _clueSR.enabled = true;
+            _tileSR.color = TileController.Instance.Color_Passage;
             _clueSR.sprite = TileController.Instance.PassageClue;
             return true;
         }
@@ -360,18 +365,34 @@ public class TileHandler : MonoBehaviour
         if (abilityToDepict == AgentData.AgentAbility.Move)
         {
             _tileSR.color = TileController.Instance.Color_legalMove;
+            _actionAvailableSR.sprite = ActorController.Instance.MoveAbilityIcon;
         }
         else if (abilityToDepict == AgentData.AgentAbility.Search)
         {
             _tileSR.color = TileController.Instance.Color_legalSearch;
+            _actionAvailableSR.sprite = ActorController.Instance.SearchAbilityIcon;
         }
         else if (abilityToDepict == AgentData.AgentAbility.Pass)
         {
             _tileSR.color = TileController.Instance.Color_pass;
+            _actionAvailableSR.sprite = null;
         }
         else
         {
-            _tileSR.color = Color.white;
+            if (_clueType == ClueTypes.Origin)
+            {
+                _tileSR.color = TileController.Instance.Color_Origin;
+            }
+            else if (_clueType == ClueTypes.Passage && _clueSR.sprite != null && GameController.Instance.GameState == GameController.GameStates.InRun)
+            {
+                _tileSR.color = TileController.Instance.Color_Passage;
+            }
+            else
+            {
+                _tileSR.color = TileController.Instance.Color_basic;
+            }
+
+            _actionAvailableSR.sprite = null;
         }
 
     }
