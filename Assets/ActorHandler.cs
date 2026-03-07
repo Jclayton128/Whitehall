@@ -92,6 +92,8 @@ public class ActorHandler : MonoBehaviour
         else if (_abilityQueue[0] == AgentData.AgentAbility.Search && LegalSearches.Contains(clickedTile))
         {
             _hasSearchedForCluesThisTurn = true;
+
+            GameController.Instance.ModifyScore_Search();
             bool foundClue = TileController.Instance.SearchForClue(clickedTile);
 
             ReplayController.Instance.AddStep(new ReplayStep(this, ReplayStep.StepTypes.Search, clickedTile, 0));
@@ -123,12 +125,14 @@ public class ActorHandler : MonoBehaviour
         {
             ReplayController.Instance.AddStep(new ReplayStep(this, ReplayStep.StepTypes.Arrest, clickedTile, 0));
             //Debug.Log("Attempting arrest: Found the fox!");
+
             clickedTile.SetActionTaken(TileHandler.ActionTypes.Arrested);
             ActorController.Instance.Enemy.ShowSprite();
             GameController.Instance.EndRun_Victory_Arrest();
         }
         else
         {
+            GameController.Instance.ModifyScore_Arrest();
             ReplayController.Instance.AddStep(new ReplayStep(this, ReplayStep.StepTypes.Arrest, clickedTile, 0));
             clickedTile.SetActionTaken(TileHandler.ActionTypes.Arrested);
             //Debug.Log("Attempting arrest: nothing...");
