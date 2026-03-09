@@ -9,7 +9,7 @@ using UnityEngine;
 
 public class ActorHandler : MonoBehaviour
 {
-    public enum EnemyStrategies { Legacy, DestinationSprint, DecoySprint}
+    public enum EnemyStrategies { Legacy, DestinationSprint, DecoySprint, StutterSprint, FleeSprint, Count}
 
     //ref
     [SerializeField] bool _isAgent = false;
@@ -60,6 +60,8 @@ public class ActorHandler : MonoBehaviour
         else
         {
             HideSprite();
+            int rand = UnityEngine.Random.Range(0, (int)EnemyStrategies.Count);
+            _enemyStrategy = (EnemyStrategies)rand;
         }
 
         _startingTile = GetCurrentTile();
@@ -427,15 +429,61 @@ public class ActorHandler : MonoBehaviour
             TileController.Instance.FindAllDestinationDistances();
             TileController.Instance.FindAllAgentDistances();
 
-            //var nextTile = ExecuteStrategy_Legacy();
-            //var nextTile = ExecuteStrategy_DestinationSprint();
-            var nextTile = ExecuteStrategy_DecoySprint();
+            var nextTile = ExecuteStrategy();
 
             nextTile.SetClue(TileHandler.ClueTypes.Passage);
             SlideToNewTile(nextTile);
             _visitedTiles.Add(nextTile);
         }
 
+    }
+
+    private TileHandler ExecuteStrategy()
+    {
+        switch (_enemyStrategy)
+        {
+            case EnemyStrategies.Legacy:
+                return ExecuteStrategy_Legacy();
+
+            case EnemyStrategies.DestinationSprint:
+                return ExecuteStrategy_DestinationSprint();
+
+            case EnemyStrategies.DecoySprint:
+                return ExecuteStrategy_DecoySprint();
+
+            case EnemyStrategies.StutterSprint:
+                return ExecuteStrategy_StutterSprint();
+
+            case EnemyStrategies.FleeSprint:
+                return ExecuteStrategy_FleeSprint();
+
+            default: return ExecuteStrategy_Legacy();
+        }
+    }
+
+    private TileHandler ExecuteStrategy_RandomWalk()
+    {
+
+        int rand = UnityEngine.Random.Range(0, CurrentTile.LinkedTiles.Count);
+        return CurrentTile.LinkedTiles[rand];
+    }
+    private TileHandler ExecuteStrategy_Flee()
+    {
+        float scoreToBeat = float.NegativeInfinity;
+        TileHandler nextTile = null;
+
+        foreach (var tile in CurrentTile.LinkedTiles)
+        {
+            float score = tile.AgentDist;
+            //Debug.Log($"{tile.TileIndex} agent score: {score}");
+            if (score > scoreToBeat)
+            {
+                nextTile = tile;
+                scoreToBeat = score;
+            }
+        }
+
+        return nextTile;
     }
 
     private TileHandler ExecuteStrategy_Legacy()
@@ -509,7 +557,8 @@ public class ActorHandler : MonoBehaviour
         return nextTile;
     }
 
-    [SerializeField] private TileHandler _decoyDestination;
+    [Header("AI Strategy")]
+    private TileHandler _decoyDestination;
 
     public TileHandler ExecuteStrategy_DecoySprint()
     {
@@ -560,6 +609,57 @@ public class ActorHandler : MonoBehaviour
 
         return nextTile;
 
+    }
+
+    [SerializeField] private int _strategyTimer = 0;
+    public TileHandler ExecuteStrategy_StutterSprint()
+    {
+        //sprint for 3 turns, then stutter for 2, then repeat.
+        _strategyTimer++;
+        TileHandler nextTile;
+
+        if (_strategyTimer == 1)
+        {
+            nextTile = ExecuteStrategy_RandomWalk();
+        }
+        else if (_strategyTimer < 4)
+        {
+            nextTile = ExecuteStrategy_DestinationSprint();
+        }
+        else if (_strategyTimer >= 4 && _strategyTimer < 6)
+        {
+            nextTile = ExecuteStrategy_RandomWalk();
+        }
+        else if (_strategyTimer >= 6 && _strategyTimer < 9)
+        {
+            nextTile = ExecuteStrategy_DestinationSprint();
+        }
+        else if (_strategyTimer >= 9 && _strategyTimer < 11)
+        {
+            nextTile = ExecuteStrategy_RandomWalk();
+        }
+        else
+        {
+            nextTile = ExecuteStrategy_DestinationSprint();
+        }
+        return nextTile;
+    }
+
+    public TileHandler ExecuteStrategy_FleeSprint()
+    {
+        _strategyTimer++;
+        if (_strategyTimer < 4)
+        {
+            return ExecuteStrategy_DestinationSprint();
+        }
+        else if ( CurrentTile.DestinationDist < GameController.Instance.RemainingTurns - 1)
+        {
+            return ExecuteStrategy_Flee();
+        }
+        else
+        {
+            return ExecuteStrategy_DestinationSprint();
+        }
     }
 
 

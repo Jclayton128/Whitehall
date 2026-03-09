@@ -61,6 +61,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: c4954e01524af274da0e996a41032a6c, type: 2}
     - target: {fileID: 3292707244480955132, guid: 5b47c928c9d858a4587e1c58488c55a4, type: 3}
+      propertyPath: _enemyStrategy
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3292707244480955132, guid: 5b47c928c9d858a4587e1c58488c55a4, type: 3}
       propertyPath: _agentWeighting.m_Curve.Array.size
       value: 3
       objectReference: {fileID: 0}

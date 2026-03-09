@@ -167,7 +167,21 @@ MonoBehaviour:
   _portraitSR: {fileID: 8752207641843907879}
   _moveRange: 1
   _searchRange: 1
+  _agentWeighting:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _destinationWeighting:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   _abilityQueue: 
+  _startingTile: {fileID: 0}
+  _enemyStrategy: 3
 --- !u!1 &7276839183537043696
 GameObject:
   m_ObjectHideFlags: 0
