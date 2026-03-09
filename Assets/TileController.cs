@@ -15,28 +15,21 @@ public class TileController : MonoBehaviour
 
 
     [SerializeField] Transform _tileHolder = null;
+    public Transform TileHolder => _tileHolder;
     [SerializeField] TileHandler _tilePrefab = null;
 
     //settings
     [SerializeField] int _arenaSize_X = 11;
-    public int ArenaSize_X => _arenaSize_X;
     [SerializeField] int _arenaSize_Y = 9;
 
     [SerializeField] float _yTileFactor = 1.0f;
-    public float YTileFactor => _yTileFactor;
-
-    [Header ("Tree Stuff")]
-    [SerializeField] float _yTreeFactor = 1.0f;
-    [SerializeField] float _yTreeOffset = 0.2f;
-    [SerializeField] float _perlinZoom = 0.2f;
-
-    public float YTreeFactor => _yTreeFactor;
-    public float YTreeOffset => _yTreeOffset;
-    float _treeRandX;
-    float _treeRandY;
+    public float YTileFactor => _yTileFactor;   
 
     [SerializeField] float _tileGap_x = 0.5f;
     [SerializeField] float _tileGap_y = 0.5f;
+
+    public float XBound_Arena { get; private set; }
+    public float YBound_Arena { get; private set; }
 
     [SerializeField] TileLinkageHandler _tileLinkagePrefab = null;
     public float ClickTweenTime = 0.75f;
@@ -56,13 +49,13 @@ public class TileController : MonoBehaviour
     public Color Color_Origin = Color.yellow;
 
     //state
-    System.Random _rnd;
-    bool _isProcessingClick = false;
+
     [SerializeField] List<TileHandler> _tilesRaw = new List<TileHandler>();
     Dictionary<Vector2Int, TileHandler> _tilesLocation = new Dictionary<Vector2Int, TileHandler>();
 
     TileHandler _tileUnderCursor;
     Dictionary<int, TileLinkageHandler> _cantorIndexDictionary = new Dictionary<int, TileLinkageHandler>();
+    List<TileLinkageHandler> _tileLinkagesRaw = new List<TileLinkageHandler>(); 
 
     public TileHandler EnemyStartTile { get; private set; }
     public TileHandler EnemyDestinationTile { get; private set; }
@@ -72,7 +65,7 @@ public class TileController : MonoBehaviour
     private void Awake()
     {
         Instance = this;
-        _rnd = new System.Random();
+
 
     }
 
@@ -81,8 +74,6 @@ public class TileController : MonoBehaviour
         _tileHolder.transform.position = Vector2.zero;
         RemoveAllTiles();
 
-        _treeRandX = (float)_rnd.NextDouble();
-        _treeRandY = (float)_rnd.NextDouble();
 
         ConstructArena();
         LinkTilesLogically();
@@ -91,7 +82,36 @@ public class TileController : MonoBehaviour
 
         LinkTilesGraphically();
 
-        RecenterTiles();
+
+
+        GenerateBounds();
+
+        TreeController.Instance.GenerateTrees();
+
+        FinalPrepsForGametime();
+    }
+
+
+    private void GenerateBounds()
+    {
+        float xToBeat = 0;
+        float yToBeat = 0;
+
+        foreach(var tile in _tilesRaw)
+        {
+            if (tile.transform.localPosition.x > xToBeat)
+            {
+                xToBeat = tile.transform.localPosition.x;
+            }
+
+            if (tile.transform.localPosition.y > yToBeat)
+            {
+                yToBeat = tile.transform.localPosition.y;
+            }
+        }
+
+        XBound_Arena = xToBeat;
+        YBound_Arena = yToBeat;
     }
 
     private void RemoveAllTiles()
@@ -115,6 +135,7 @@ public class TileController : MonoBehaviour
             _tilesLocation.Clear();
             _tileUnderCursor = null;
             _cantorIndexDictionary.Clear();
+            _tileLinkagesRaw.Clear();
             EnemyDestinationTile = null;
         }
 
@@ -142,8 +163,9 @@ public class TileController : MonoBehaviour
 
     private void CreateNewTile(Vector2 location, Vector2Int indexPos)
     {
-        TileHandler newTile = Instantiate(_tilePrefab, _tileHolder);
-        newTile.transform.position = location;
+        //TileHandler newTile = Instantiate(_tilePrefab, _tileHolder);
+        TileHandler newTile = Instantiate(_tilePrefab, location, Quaternion.identity);
+        //newTile.transform.position = location;
         newTile.AssignIndexPos(indexPos);
 
         _tilesRaw.Add(newTile);
@@ -151,15 +173,7 @@ public class TileController : MonoBehaviour
 
         newTile.AssignIndexNumber(_tilesRaw.IndexOf(newTile));
 
-        float xVal = ((float)indexPos.x / (float)_arenaSize_X) + _treeRandX;
-        float yVal = ((float)indexPos.y / (float)_arenaSize_Y) +_treeRandY;
-
-        float rawTree = Mathf.PerlinNoise(xVal * _perlinZoom, yVal * _perlinZoom);
-        //Debug.Log($"locX: {indexPos.x} / arenaSizeX {_arenaSize_X}");
-        
-        int treeCount = Mathf.FloorToInt( Mathf.Lerp(0, 4, rawTree));
-        //Debug.Log($"{treeCount}: {Mathf.Lerp(0, 4, rawTree)} from {xVal} / {yVal}");
-        newTile.SetupTrees(treeCount);
+       
     }
 
     private void LinkTilesLogically()
@@ -223,9 +237,10 @@ public class TileController : MonoBehaviour
                 {   
                     //if not, create a new tilelinkage with that CI int and add to dictionary
 
-                    TileLinkageHandler newTileLinkage = Instantiate(_tileLinkagePrefab, _tileHolder);
+                    TileLinkageHandler newTileLinkage = Instantiate(_tileLinkagePrefab, Vector2.zero, Quaternion.identity);
                     newTileLinkage.SetTileLinkage(tile, neighbor, cantorIndex);
                     _cantorIndexDictionary.Add(cantorIndex, newTileLinkage);
+                    _tileLinkagesRaw.Add(newTileLinkage);
                 }
             }
         }
@@ -353,8 +368,19 @@ public class TileController : MonoBehaviour
         return possibleOptions[rand];
     }
 
-    private void RecenterTiles()
+    private void FinalPrepsForGametime()
     {
+        foreach (var tile in _tilesRaw)
+        {
+            tile.transform.parent = _tileHolder.transform;
+        }
+
+        foreach (var linkage in _tileLinkagesRaw)
+        {
+            linkage.transform.parent = _tileHolder.transform;
+            linkage.PrepForGametime();
+        }
+
         Vector2 newPos = Vector2.zero;
         newPos.x = -(((float)_arenaSize_X / 2f) + (3f * _tileGap_x));
         newPos.y = -((((float)_arenaSize_Y + 1f) / 2f) + (3f * _tileGap_y));

@@ -1326,6 +1326,7 @@ GameObject:
   - component: {fileID: 945837923}
   - component: {fileID: 945837926}
   - component: {fileID: 945837927}
+  - component: {fileID: 945837928}
   m_Layer: 0
   m_Name: Controllers
   m_TagString: Untagged
@@ -1350,9 +1351,6 @@ MonoBehaviour:
   _arenaSize_X: 9
   _arenaSize_Y: 9
   _yTileFactor: 1
-  _yTreeFactor: 0.5
-  _yTreeOffset: 0.28
-  _perlinZoom: 4
   _tileGap_x: 0.4
   _tileGap_y: 0.4
   _tileLinkagePrefab: {fileID: 386113983379012561, guid: 6d7a183e53390d6479bd240900a32aa3, type: 3}
@@ -1364,7 +1362,7 @@ MonoBehaviour:
   SecretPassageClue: {fileID: 21300000, guid: 292cbed5e0e706f40ad918af83c6376a, type: 3}
   Color_basic: {r: 0.64705884, g: 0.8392157, b: 0.64705884, a: 1}
   Color_pass: {r: 0.21293165, g: 0.2735849, b: 0.21293165, a: 1}
-  Color_legalMove: {r: 0.17924401, g: 0.468, b: 0.17924401, a: 1}
+  Color_legalMove: {r: 0.40396938, g: 0.9622642, b: 0.40396938, a: 1}
   Color_legalSearch: {r: 0.8901961, g: 0.95, b: 0.8901961, a: 1}
   Color_highlight: {r: 0.9339623, g: 0.8767621, b: 0.22467959, a: 1}
   Color_Passage: {r: 0.9622642, g: 0.672655, b: 0.25872195, a: 1}
@@ -1479,6 +1477,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _pingPrefab: {fileID: 4772341921976608453, guid: cf8c0cee902d62c4a8f521ffd49ee809, type: 3}
   _pingTime: 1.5
+--- !u!114 &945837928
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 945837920}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: babb101a640ae724c8b97e126188a78b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _treePrefab: {fileID: -5096698296857132296, guid: b1ca1223e5d7e324599571199ab07681, type: 3}
+  _yTreeFactor: 1
+  _yTreeOffset: 0.2
+  _perlinZoom: 2
+  _minTreeSpacing: 0.125
+  _forestEdgeBuffer: 0.55
+  _plantingJitter: 0.0625
+  _plantedTrees: []
 --- !u!1 &1007676980
 GameObject:
   m_ObjectHideFlags: 0
