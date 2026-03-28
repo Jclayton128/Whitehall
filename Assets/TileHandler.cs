@@ -20,6 +20,7 @@ public class TileHandler : MonoBehaviour
     [SerializeField] TextMeshPro _text = null;
     [SerializeField] TextMeshPro _agentDistanceTMP = null;
     [SerializeField] TextMeshPro _destinationDistanceTMP = null;
+    [SerializeField] TextMeshPro _originDistanceTMP = null;
     [SerializeField] Transform _visualsTransform = null;
     [SerializeField] SpriteRenderer _treeSR = null;
 
@@ -38,6 +39,8 @@ public class TileHandler : MonoBehaviour
     public List<TileHandler> LinkedTiles = new List<TileHandler> ();
     public List<TileHandler> RandomizedLinkedTiles => GetRandomizeLinkedTiles();
 
+    public List<TileHandler> ProximalTiles = new List<TileHandler> ();
+
     public ActorHandler Occupant => GetComponentInChildren<ActorHandler> ();
     [SerializeField] ClueTypes _clueType = ClueTypes.None;
     public ClueTypes ClueType => _clueType;
@@ -47,6 +50,8 @@ public class TileHandler : MonoBehaviour
     public TileHandler PreviousTile;
     public int AgentDist { get; private set; }
     public int DestinationDist { get; private set; }
+
+    public int OriginDist { get; private set; }
     public int SpecialDistance { get; private set; }
 
     bool _enemyHasPassedThisWay = false;
@@ -104,6 +109,7 @@ public class TileHandler : MonoBehaviour
         if (!LinkedTiles.Contains(tileToLink) && tileToLink != this)
         {
             LinkedTiles.Add(tileToLink);
+            ProximalTiles.Add(tileToLink);
         }
 
     }
@@ -408,7 +414,9 @@ public class TileHandler : MonoBehaviour
     public void FindAndPublishDestinationDistance()
     {
         DestinationDist = TileController.Instance.GetDistanceToDestination(this);
+        OriginDist = TileController.Instance.GetDistanceToSpecialTile(TileController.Instance.EnemyStartTile, this);
         _destinationDistanceTMP.text = DestinationDist.ToString();
+        _originDistanceTMP.text = OriginDist.ToString();
     }
 
     public void FindSpecialDistance(TileHandler specialTarget)
@@ -421,6 +429,7 @@ public class TileHandler : MonoBehaviour
         _text.enabled = true;
          _agentDistanceTMP.enabled = true;
         _destinationDistanceTMP.enabled = true;
+        _originDistanceTMP.enabled = true;
     }
 
     public void HideTileValues()
@@ -428,6 +437,8 @@ public class TileHandler : MonoBehaviour
         _text.enabled = false;
         _agentDistanceTMP.enabled = false;
         _destinationDistanceTMP.enabled = false;
+        _originDistanceTMP.enabled = false;
+
     }
 
     #endregion

@@ -10,6 +10,7 @@ using UnityEngine;
 public class ActorHandler : MonoBehaviour
 {
     public enum EnemyStrategies { Legacy, DestinationSprint, DecoySprint, StutterSprint, FleeSprint, Count}
+    public enum EnemyWildcards { Teleport, DoubleMove, Disable}
 
     //ref
     [SerializeField] bool _isAgent = false;
@@ -440,6 +441,15 @@ public class ActorHandler : MonoBehaviour
 
     private TileHandler ExecuteStrategy()
     {
+        Debug.Log($"Origin Dest: {CurrentTile.OriginDist} vs Turn Count: {GameController.Instance.TurnCount - 1}");
+        if (CurrentTile.OriginDist == GameController.Instance.TurnCount - 1 &&
+            CurrentTile.AgentDist <= 4 && CurrentTile.DestinationDist < GameController.Instance.RemainingTurns -1)
+        {
+            //The next move location could be in search danger. If player searches there, location would be certainly known
+            return ExecuteStrategy_Flee();
+        }
+
+
         switch (_enemyStrategy)
         {
             case EnemyStrategies.Legacy:
